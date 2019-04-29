@@ -1,5 +1,20 @@
 #include "print.h"
 
+#include <sys/stat.h>
+#define brk() do { std::cout << "Press the 'enter' key to continue.." << '\n'; getchar(); } while (0); //break function used for waiting for the user
+#define clr_screen() std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //clear screen
+
+bool file_exists(const std::string& name){
+    /*
+        Checks if a given file exists;
+        Takes a string specifing the path to the file to check as an argument;
+        Returns true in case the file exists and false in case the files doesn't exist;
+        Source: https://stackoverflow.com/a/12774387
+    */
+    struct stat buffer;
+    return (stat (name.c_str(), &buffer) == 0);
+}
+
 void main_menu();
 
 
