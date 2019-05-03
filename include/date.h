@@ -2,14 +2,16 @@
 #define __DATE_H_
 
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 
 class Date{
     public:
         Date(std::istream &input_stream);
         void print(std::ostream &output_stream);
-        short int compare(Date date);
+        short int get_year() const;
+        short int get_month() const;
+        short int get_day() const;
     private:
         bool is_leap();
         unsigned short int year;
@@ -29,7 +31,7 @@ Date::Date(std::istream &input_stream)
     input_string >> day; input_string.ignore(1000, '\n');
 
     if(input_stream.fail())
-        throw(std::string("DATE INFO WRITTEN INCORRECTLY\n"));
+        throw(std::string("INSERT AN INTEGER\n"));
 
     if((month < 1) || (month > 12))
         throw(std::string("INSERT A MONTH BETWEEN 1 AND 12\n"));
@@ -71,46 +73,63 @@ bool Date::is_leap()
 }
 
 
-short int Date::compare(Date date)
+//Getters
+short int Date::get_year() const
 {
-    if(year == date.year && month == date.month && day == date.day)
-        return 0;
+    return year;
+}
+short int Date::get_month() const
+{
+    return month;
+}
+short int Date::get_day() const
+{
+    return day;
+}
 
-    if(year < date.year)
-        return -1;
+
+//Operator overload
+bool operator<(const Date &date1, const Date &date2)
+{
+    const int year1 = date1.get_year(), year2 = date2.get_year();
+    const int month1 = date1.get_month(), month2 = date2.get_month();
+    const int day1 = date1.get_day(), day2 = date2.get_day();
+    if(year1 < year2)
+        return 1;
     else
     {
-        if(year == date.year)
+        if(year1 == year2)
         {
-            if(month < date.month)
-                return -1;
+            if(month1 < month2)
+                return 1;
             else
             {
-                if((month == date.month) && (day < date.day))
-                    return -1;
+                if((month1 == month2) && (day1 < day2))
+                    return 1;
             }
         }
     }
-
-    return 1;
-
-}
-
-/*
-int main()
-{
-    try
-    {
-        Date data1(std::cin), data2(std::cin);
-        std::cout << data1.compare(data2);
-    }
-    catch(std::string e)
-    {
-        std::cout << e << '\n';
-    }
-
+    
     return 0;
 }
-*/
-
+bool operator==(const Date &date1, const Date &date2)
+{
+    if((date1.get_year() == date2.get_year()) && (date1.get_month() == date2.get_month()) && (date1.get_day() == date2.get_day()))
+        return 1;
+    return 0;
+}
+bool operator>(const Date &date1, const Date &date2)
+{
+    if(date1 == date2)
+        return 0;
+    return (!(date1 < date2));
+}
+bool operator>=(const Date &date1, const Date &date2)
+{
+    return !(date1 < date2);
+}
+bool operator<=(const Date &date1, const Date &date2)
+{
+    return !(date1 > date2);
+}
 #endif
