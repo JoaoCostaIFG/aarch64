@@ -7,6 +7,7 @@
 
 class Date{
     public:
+        Date();
         Date(std::istream &input_stream);
         void print(std::ostream &output_stream);
         short int get_year() const;
@@ -18,8 +19,11 @@ class Date{
         unsigned short int month;
         unsigned short int day;
 };
-
-
+Date::Date(){
+    year = 0;
+    month = 0;
+    day = 0;
+}
 Date::Date(std::istream &input_stream)
 {
     std::string temp_str;

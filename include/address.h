@@ -7,6 +7,7 @@
 
 class Address{
     public:
+        Address();
         Address(std::istream &input_stream);
         void print(std::ostream &output_stream);
         std::string get_street_name() const;
@@ -21,8 +22,13 @@ class Address{
         std::string postal_code;
         std::string locale;
 };
-
-
+Address::Address(){
+    street_name = "";
+    door_num = 0;
+    floor_num = "-";
+    postal_code = "0000-000";
+    locale = "";
+}
 Address::Address(std::istream &input_stream)
 {
     std::string temp_str;
