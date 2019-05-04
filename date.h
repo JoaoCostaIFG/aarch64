@@ -1,9 +1,14 @@
+#ifndef __DATE_H_
+#define __DATE_H_
+
 #include <iostream>
 #include <sstream>
+#include <string>
+
 class Date{
     public:
         Date(std::istream &input_stream);
-        void print(std::ostream &output_stream);
+        void print(std::ostream &output_stream) const;
         short int get_year() const;
         short int get_month() const;
         short int get_day() const;
@@ -13,6 +18,8 @@ class Date{
         unsigned short int month;
         unsigned short int day;
 };
+
+
 Date::Date(std::istream &input_stream)
 {
     std::string temp_str;
@@ -43,16 +50,17 @@ Date::Date(std::istream &input_stream)
     {Date data(std::cin);
         throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LESS THAT 30)\n"));
     }
-
-    
-
 }
-void Date::print(std::ostream &output_stream)
+
+
+void Date::print(std::ostream &output_stream) const
 {
     output_stream << "Year: " << year;
     output_stream << "\nMonth: " << month;
     output_stream << "\nDay: " << day << std::endl;
 }
+
+
 bool Date::is_leap()
 {
     if(((year % 4) == 0) && ((year % 100) != 0))
@@ -63,6 +71,9 @@ bool Date::is_leap()
 
     return false;
 }
+
+
+//Getters
 short int Date::get_year() const
 {
     return year;
@@ -75,6 +86,9 @@ short int Date::get_day() const
 {
     return day;
 }
+
+
+//Operator overload
 bool operator<(const Date &date1, const Date &date2)
 {
     const int year1 = date1.get_year(), year2 = date2.get_year();
@@ -110,3 +124,12 @@ bool operator>(const Date &date1, const Date &date2)
         return 0;
     return (!(date1 < date2));
 }
+bool operator>=(const Date &date1, const Date &date2)
+{
+    return !(date1 < date2);
+}
+bool operator<=(const Date &date1, const Date &date2)
+{
+    return !(date1 > date2);
+}
+#endif
