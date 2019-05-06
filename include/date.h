@@ -1,9 +1,6 @@
 #ifndef __DATE_H_
 #define __DATE_H_
 
-#include <iostream>
-#include <sstream>
-#include <string>
 
 class Date{
     public:

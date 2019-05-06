@@ -1,9 +1,6 @@
 #ifndef __ADDRESS_H_
 #define __ADDRESS_H_
 
-#include <iostream>
-#include <string>
-#include <sstream>
 
 class Address{
     public:

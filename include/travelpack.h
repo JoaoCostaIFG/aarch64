@@ -1,22 +1,19 @@
 #ifndef __TRAVELPACK_H_
 #define __TRAVELPACK_H_
 
-#include <sstream>
-#include <string>
-
-#include "date.h"
 
 class TravelPack{
     public:
         TravelPack();
         TravelPack(std::istream &input_stream);
         void print(std::ostream &output_stream);
+        void buy_seat();
         void make_unavailable();
-        void buy_seat()
         //Getters
         bool is_available();
         int get_id() const;
         std::string get_destination() const;
+        std::vector<std::string> get_land_marks() const;
         std::string get_start_date() const;
         std::string get_end_date() const;
         float get_price() const;
@@ -26,6 +23,7 @@ class TravelPack{
         void rect_availability();
         int id;
         std::string destination;
+        std::vector<std::string> land_marks;
         Date start_date;
         Date end_date;
         float price;
@@ -33,12 +31,11 @@ class TravelPack{
         unsigned int sold_seats;
 };
 TravelPack::TravelPack(){
-    id = 0x00000000;
-    destinations = "";
-    /*
-    start_date = Date();
-    end_date = Date();
-    */
+    //id = 0x00000000;
+    id = 10;
+    destination = "";
+    //start_date = Date();
+    //end_date = Date();
     price = 0;
     total_seats = 0;
     sold_seats = 0;
@@ -49,6 +46,11 @@ TravelPack::TravelPack(std::istream &input_stream){
 
     input_stream >> id; input_stream.ignore(1000, '\n');
     getline(input_stream, destination, '-'); destination = str_trim(destination);
+    getline(input_stream, temp_str); input_string.str(temp_str.append(" ,"));
+    while(!input_string.fail()){ //not sure if it works
+        getline(input_stream, temp_str, ','); temp_str = str_trim(temp_str);
+        land_marks.push_back(temp_str);
+    }
 
     getline(input_stream, temp_str); input_string.str(temp_str.append(" /"));
     start_date = Date(input_string);
@@ -76,7 +78,7 @@ void TravelPack::rect_availability(){
 
 
 void TravelPack::make_unavailable(){
-    if !(is_available()){
+    if (!is_available()){
         throw(std::string("TRAVEL PACK IS ALREADY UNAVAILABLE\n"));
     }
     id *= -1;
@@ -84,7 +86,7 @@ void TravelPack::make_unavailable(){
 
 
 void TravelPack::buy_seat(){
-    if !(is_available()){
+    if (!is_available()){
         throw(std::string("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n"));
     }
     sold_seats++;
@@ -106,11 +108,14 @@ int TravelPack::get_id() const{
 std::string TravelPack::get_destination() const{
     return destination;
 }
+std::vector<std::string> TravelPack::get_land_marks() const{
+    return land_marks;
+}
 std::string TravelPack::get_start_date() const{
-    return std::string(start_date.get_day()) + std::string(start_date.get_month()) + std::string(start_date.get_year());
+    return std::to_string(start_date.get_day()) + "/" + std::to_string(start_date.get_month()) + "/" + std::to_string(start_date.get_year());
 }
 std::string TravelPack::get_end_date() const{
-    return std::string(end_date.get_day()) + std::string(end_date.get_month()) + std::string(end_date.get_year());
+    return std::to_string(end_date.get_day()) + "/" + std::to_string(end_date.get_month()) + "/" + std::to_string(end_date.get_year());
 }
 float TravelPack::get_price() const{
     return price;
@@ -124,12 +129,8 @@ unsigned int TravelPack::get_sold_seats() const{
 
 
 //Operator overload
-bool operator++(const TravelPack &travelpack){
-    if !(is_available()){
-        throw(std::string("CAN'T BUY PACK BECAUSE IT IS UNAVAILABLE/OVERBOOKED\n"));
-    }
+void operator++(TravelPack &travelpack){
     travelpack.buy_seat();
-    //UPDATE DICT HERE
 }
 
 #endif
