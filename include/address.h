@@ -10,6 +10,7 @@ class Address{
         Address();
         Address(std::istream &input_stream);
         void print(std::ostream &output_stream);
+        //Getters
         std::string get_street_name() const;
         unsigned int get_door_num() const;
         std::string get_floor_num() const; //can be '-' if not applicable

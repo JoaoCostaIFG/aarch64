@@ -10,6 +10,7 @@ class Date{
         Date();
         Date(std::istream &input_stream);
         void print(std::ostream &output_stream);
+        //Getters
         short int get_year() const;
         short int get_month() const;
         short int get_day() const;
@@ -136,4 +137,5 @@ bool operator<=(const Date &date1, const Date &date2)
 {
     return !(date1 > date2);
 }
+
 #endif
