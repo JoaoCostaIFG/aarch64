@@ -27,18 +27,15 @@ class TravelPack{
         Date start_date;
         Date end_date;
         float price;
-        unsigned int total_seats;
-        unsigned int sold_seats;
+        unsigned int seats;
 };
 TravelPack::TravelPack(){
-    //id = 0x00000000;
-    id = 10;
+    id = 0x00000000;
     destination = "";
     //start_date = Date();
     //end_date = Date();
     price = 0;
-    total_seats = 0;
-    sold_seats = 0;
+    seats = 0;
 }
 TravelPack::TravelPack(std::istream &input_stream){
     std::string temp_str;
@@ -63,15 +60,19 @@ TravelPack::TravelPack(std::istream &input_stream){
     }
 
     input_stream >> price; input_stream.ignore(1000, '\n');
-    input_stream >> total_seats; input_stream.ignore(1000, '\n');
-    input_stream >> sold_seats; input_stream.ignore(1000, '\n');
+    input_stream >> seats; input_stream.ignore(1000, '\n');
 
     rect_availability();
 }
 
 
+void TravelPack::print(std::ostream &output_stream){
+
+}
+
+
 void TravelPack::rect_availability(){
-    if (total_seats <= sold_seats && id > 0){
+    if (seats == 0 && id > 0){
         id *= -1;
     }
 }
@@ -89,7 +90,7 @@ void TravelPack::buy_seat(){
     if (!is_available()){
         throw(std::string("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n"));
     }
-    sold_seats++;
+    seats--;
     rect_availability();
 }
 
