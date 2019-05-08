@@ -1,6 +1,10 @@
 NiceHolidays
 133331145
 http://www.niceholidays.pt
+<<<<<<< JoaoCostaIFG-patch
+Rua Sem Nome / 100 / - / 4400-345 / Porto
+=======
 Rua Sem Nome / 100 / ‐ / 4400‐345 / Porto
+>>>>>>> master
 clients.txt
 packs.txt

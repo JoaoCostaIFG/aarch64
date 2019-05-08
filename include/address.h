@@ -1,14 +1,13 @@
 #ifndef __ADDRESS_H_
 #define __ADDRESS_H_
 
-#include <iostream>
-#include <string>
-#include <sstream>
 
 class Address{
     public:
+        Address();
         Address(std::istream &input_stream);
         void print(std::ostream &output_stream);
+        //Getters
         std::string get_street_name() const;
         unsigned int get_door_num() const;
         std::string get_floor_num() const; //can be '-' if not applicable
@@ -21,8 +20,13 @@ class Address{
         std::string postal_code;
         std::string locale;
 };
-
-
+Address::Address(){
+    street_name = "";
+    door_num = 0;
+    floor_num = "-";
+    postal_code = "0000-000";
+    locale = "";
+}
 Address::Address(std::istream &input_stream)
 {
     std::string temp_str;
@@ -37,7 +41,7 @@ Address::Address(std::istream &input_stream)
     getline(input_string, temp_str, '/');
 
     if(temp_str != "" || input_stream.fail())
-        throw(std::string("ADDRESS INFO WRITTEN INCORRECTLY\n"));
+        throw std::invalid_argument("ADDRESS INFO WRITTEN INCORRECTLY\n");
 }
 
 

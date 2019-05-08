@@ -1,14 +1,13 @@
 #ifndef __DATE_H_
 #define __DATE_H_
 
-#include <iostream>
-#include <sstream>
-#include <string>
 
 class Date{
     public:
+        Date();
         Date(std::istream &input_stream);
         void print(std::ostream &output_stream);
+        //Getters
         short int get_year() const;
         short int get_month() const;
         short int get_day() const;
@@ -18,8 +17,11 @@ class Date{
         unsigned short int month;
         unsigned short int day;
 };
-
-
+Date::Date(){
+    year = 0;
+    month = 0;
+    day = 0;
+}
 Date::Date(std::istream &input_stream)
 {
     std::string temp_str;
@@ -31,24 +33,24 @@ Date::Date(std::istream &input_stream)
     input_string >> day; input_string.ignore(1000, '\n');
 
     if(input_stream.fail())
-        throw(std::string("INSERT AN INTEGER\n"));
+        throw std::invalid_argument("INSERT AN INTEGER\n");
 
     if((month < 1) || (month > 12))
-        throw(std::string("INSERT A MONTH BETWEEN 1 AND 12\n"));
+        throw std::domain_error("INSERT A MONTH BETWEEN 1 AND 12\n");
     
     if((day < 1) || (day > 31))
-        throw(std::string("INSERT A DAY BETWEEN 1 AND 31\n"));
+        throw std::domain_error("INSERT A DAY BETWEEN 1 AND 31\n");
 
     if(month == 2)
     {
         if (is_leap() && (day > 29))
-            throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n"));
+            throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");
         else if (day > 28)
-            throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n"));   
+            throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");   
     }
-    else if(!(month == 1 ||month == 3 ||month == 5 ||month == 7 ||month == 8 ||month == 10 ||month == 12) && (day > 30))
-    {Date data(std::cin);
-        throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LESS THAT 30)\n"));
+    else if(!(month == 1 ||month == 3 ||month == 5 ||month == 7 ||month == 8 ||month == 10 ||month == 12) && (day > 30)){
+        Date data(std::cin);
+        throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH\n");
     }
 }
 
@@ -132,4 +134,5 @@ bool operator<=(const Date &date1, const Date &date2)
 {
     return !(date1 > date2);
 }
+
 #endif
