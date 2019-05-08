@@ -41,7 +41,7 @@ Address::Address(std::istream &input_stream)
     getline(input_string, temp_str, '/');
 
     if(temp_str != "" || input_stream.fail())
-        throw(std::string("ADDRESS INFO WRITTEN INCORRECTLY\n"));
+        throw std::invalid_argument("ADDRESS INFO WRITTEN INCORRECTLY\n");
 }
 
 

@@ -33,24 +33,24 @@ Date::Date(std::istream &input_stream)
     input_string >> day; input_string.ignore(1000, '\n');
 
     if(input_stream.fail())
-        throw(std::string("INSERT AN INTEGER\n"));
+        throw std::invalid_argument("INSERT AN INTEGER\n");
 
     if((month < 1) || (month > 12))
-        throw(std::string("INSERT A MONTH BETWEEN 1 AND 12\n"));
+        throw std::domain_error("INSERT A MONTH BETWEEN 1 AND 12\n");
     
     if((day < 1) || (day > 31))
-        throw(std::string("INSERT A DAY BETWEEN 1 AND 31\n"));
+        throw std::domain_error("INSERT A DAY BETWEEN 1 AND 31\n");
 
     if(month == 2)
     {
         if (is_leap() && (day > 29))
-            throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n"));
+            throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");
         else if (day > 28)
-            throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n"));   
+            throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");   
     }
-    else if(!(month == 1 ||month == 3 ||month == 5 ||month == 7 ||month == 8 ||month == 10 ||month == 12) && (day > 30))
-    {Date data(std::cin);
-        throw(std::string("INSERT A VALID DAY FOR THAT MONTH (LESS THAT 30)\n"));
+    else if(!(month == 1 ||month == 3 ||month == 5 ||month == 7 ||month == 8 ||month == 10 ||month == 12) && (day > 30)){
+        Date data(std::cin);
+        throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH\n");
     }
 }
 
