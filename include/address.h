@@ -47,11 +47,13 @@ Address::Address(std::istream &input_stream)
 
 void Address::print(std::ostream &output_stream) const
 {
+    output_stream << street_name << " / " << door_num << " / " << floor_num << " / " << postal_code << " / " << locale << std::endl;
+    /*
     output_stream << "Street name: " << street_name;
     output_stream << "\nDoor number: " << door_num;
     output_stream << "\nFloor number: " << floor_num;
     output_stream << "\nPostal Code: " << postal_code;
-    output_stream << "\nLocale: " << locale << std::endl;
+    output_stream << "\nLocale: " << locale << std::endl;*/
 }
 
 
