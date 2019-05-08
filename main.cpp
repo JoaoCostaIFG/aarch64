@@ -40,26 +40,7 @@ bool file_exists(const std::string& name){
 
 int main(){
     TravelPack a;
-    std::string b;
-    std::cout << a.get_sold_seats() << "\n";
-    ++a;
-    std::cout << a.get_sold_seats() << "\n";
-    /*
-    std::vector<std::string> land_marks;
-    std::string temp_str, destination;
-    std::istringstream input_string, cino;
-    cino.str("Douro Vinhateiro - Porto, Regua, Pinhao, Vila Real");
-    getline(cino, destination, '-'); destination = str_trim(destination);
-    getline(cino, temp_str); input_string.str(temp_str.append(" ,"));
-    while(!input_string.fail()){ //not sure if it works
-        getline(input_string, temp_str, ','); temp_str = str_trim(temp_str);
-        land_marks.push_back(temp_str);
-    }
-    std::cout << destination << '\n' << land_marks[0] << '\n' << land_marks[1] << '\n' << land_marks[2] << '\n' << land_marks[3] << '\n';
-    */
-    /*
-    Date date1, date2;
-    std::cout << (date1 < date2);
-    */
+    a++;
+    std::cout << a.get_seats();
     return 0;
 }

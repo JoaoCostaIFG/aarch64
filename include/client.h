@@ -1,12 +1,6 @@
 #ifndef __CLIENT_H_
 #define __CLIENT_H_
 
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include "address.h"
-#include "date.h"
 
 class Client{
     private:
