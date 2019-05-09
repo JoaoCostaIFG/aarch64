@@ -242,6 +242,8 @@ void read_info(bool &files_read, Agency &agency){
 
         if (!file_exists(packsfile_path))
             throw std::invalid_argument("THE SPECIFIED PACKS FILE DOES NOT EXIST");
+        
+        agency.name = name; agency.nif = nif; agency.address = address; agency.url = url;
 
         // clients file
         file_input.open(clientsfile_path);
