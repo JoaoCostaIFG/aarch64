@@ -105,12 +105,12 @@ unsigned int Client::getBudget() const
 {
     return budget;
 }
-void Client::buyPacket(std::vector<TravelPack> &packet_list, const int &id)
+void Client::buyPacket(std::vector<TravelPack> &packet_list, const int &index)
 {
-    if(find_in_vector(packets, id) != -1)
+    if(find_in_vector(packets, packet_list[index].get_id()) != -1)
         throw(std::string("That packet was already bought by") + name);
-    packets.push_back(id);
-    packet_list[find_in_vector(packet_list, id)]++;
+    packets.push_back(index);
+    packet_list[index]++;
 }
 
 //TODO: Add cout to constructors of address and date so that when calling those constructors with cin user knows what to type

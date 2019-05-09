@@ -29,8 +29,6 @@ class TravelPack{
         float price;
         unsigned int seats;
 };
-
-
 TravelPack::TravelPack(){
     id = 0x00000000;
     //id = 10;
@@ -47,7 +45,7 @@ TravelPack::TravelPack(std::istream &input_stream){
     input_stream >> id; input_stream.ignore(1000, '\n');
 
     getline(input_stream, temp_str);
-    if (temp_str.find("-") != std::string::npos){ //verify if the land mark list is present
+    if (temp_str.find("-") != std::string::npos){ //verify if the landmark list is present
         input_string.str(temp_str);
         getline(input_string, destination, '-'); destination = str_trim(destination);
         getline(input_string, temp_str); input_string.str(temp_str.append(" ,"));
@@ -61,17 +59,18 @@ TravelPack::TravelPack(std::istream &input_stream){
     }else{
         destination = str_trim(temp_str);
     }
-    
 
-
-    getline(input_stream, temp_str); input_string.str(temp_str.append(" /"));
+    std::cout << "Start date (yyyy/mm/dd)? ";
+    getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     start_date = Date(input_string);
 
-    getline(input_stream, temp_str); input_string.str(temp_str.append(" /"));
+    std::cout << "\nEnd date (yyyy/mm/dd)? ";
+    getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     end_date = Date(input_string);
+    std::cout << std::endl;
 
     if(start_date > end_date){
-        throw(std::string("INSERT A VALID START AND END DATES FOR THE TRAVEL PACKS\n"));
+        throw std::logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
     }
 
     input_stream >> price; input_stream.ignore(1000, '\n');
@@ -94,7 +93,7 @@ void TravelPack::rect_availability(){
 
 void TravelPack::make_unavailable(){
     if (!is_available()){
-        throw(std::string("TRAVEL PACK IS ALREADY UNAVAILABLE\n"));
+        throw std::logic_error("TRAVEL PACK IS ALREADY UNAVAILABLE\n");
     }
     id *= -1;
 }
@@ -102,7 +101,7 @@ void TravelPack::make_unavailable(){
 
 void TravelPack::buy_seat(){
     if (!is_available()){
-        throw(std::string("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n"));
+        throw std::logic_error("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n");
     }
     seats--;
     rect_availability();
