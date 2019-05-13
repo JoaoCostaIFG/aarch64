@@ -1,13 +1,15 @@
 #ifndef __ADDRESS_H_
 #define __ADDRESS_H_
 
+#include <iostream>
+#include <string>
+#include <sstream>
 
 class Address{
     public:
-        Address();
         Address(std::istream &input_stream);
-        void print(std::ostream &output_stream);
-        //Getters
+        Address() = default;
+        void print(std::ostream &output_stream) const;
         std::string get_street_name() const;
         unsigned int get_door_num() const;
         std::string get_floor_num() const; //can be '-' if not applicable
@@ -20,18 +22,16 @@ class Address{
         std::string postal_code;
         std::string locale;
 };
-Address::Address(){
-    street_name = "";
-    door_num = 0;
-    floor_num = "-";
-    postal_code = "0000-000";
-    locale = "";
-}
+
+
 Address::Address(std::istream &input_stream)
 {
     std::string temp_str;
     std::istringstream input_string;
-    getline(input_stream, temp_str); input_string.str(temp_str.append(" /")); //read line to format into temporary string and sends it for formatting
+    
+    std::cout << "Address?(Street name / Door number / Floor number / Postal code / Location)\n"; getline(input_stream, temp_str);
+    input_string.str(temp_str.append(" /")); //read line to format into temporary string and sends it for formatting
+    
     // read the address struct information. Lines are trimmed of white spaces in both ends
     getline(input_string, temp_str, '/'); street_name = str_trim(temp_str);
     input_string >> door_num; input_string.ignore(1000, '/');
@@ -45,13 +45,15 @@ Address::Address(std::istream &input_stream)
 }
 
 
-void Address::print(std::ostream &output_stream)
+void Address::print(std::ostream &output_stream) const
 {
+    output_stream << street_name << " / " << door_num << " / " << floor_num << " / " << postal_code << " / " << locale << std::endl;
+    /*
     output_stream << "Street name: " << street_name;
     output_stream << "\nDoor number: " << door_num;
     output_stream << "\nFloor number: " << floor_num;
     output_stream << "\nPostal Code: " << postal_code;
-    output_stream << "\nLocale: " << locale << std::endl;
+    output_stream << "\nLocale: " << locale << std::endl;*/
 }
 
 

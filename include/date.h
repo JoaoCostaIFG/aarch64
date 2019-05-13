@@ -6,7 +6,7 @@ class Date{
     public:
         Date();
         Date(std::istream &input_stream);
-        void print(std::ostream &output_stream);
+        void print(std::ostream &output_stream) const;
         //Getters
         short int get_year() const;
         short int get_month() const;
@@ -24,16 +24,12 @@ Date::Date(){
 }
 Date::Date(std::istream &input_stream)
 {
-    std::string temp_str;
-    std::istringstream input_string;
-    std::cout << "Start date (yyyy/mm/dd)? "; getline(input_stream, temp_str);
-    input_string.str(temp_str);
-    input_string >> year; input_string.ignore(1000, '/');
-    input_string >> month; input_string.ignore(1000, '/');
-    input_string >> day; input_string.ignore(1000, '\n');
+    input_stream >> year; input_stream.ignore(1000, '/');
+    input_stream >> month; input_stream.ignore(1000, '/');
+    input_stream >> day; input_stream.ignore(1000, '\n');
 
     if(input_stream.fail())
-        throw std::invalid_argument("INSERT AN INTEGER\n");
+        throw std::invalid_argument("DATE IS NOT FORMATED CORRECTLY\n");
 
     if((month < 1) || (month > 12))
         throw std::domain_error("INSERT A MONTH BETWEEN 1 AND 12\n");
@@ -55,11 +51,11 @@ Date::Date(std::istream &input_stream)
 }
 
 
-void Date::print(std::ostream &output_stream)
+void Date::print(std::ostream &output_stream) const
 {
-    output_stream << "Year: " << year;
-    output_stream << "\nMonth: " << month;
-    output_stream << "\nDay: " << day << std::endl;
+    output_stream   << year << '/'
+                    << month << '/'
+                    << day << std::endl;
 }
 
 
