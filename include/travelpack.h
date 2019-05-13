@@ -50,7 +50,7 @@ TravelPack::TravelPack(std::istream &input_stream){
     std::cout << "ID (negative IDs make the travel pack unavailable)? ";
     input_stream >> id; input_stream.ignore(1000, '\n');
 
-    std::cout << "\nDestination and land marks? ";
+    std::cout << "Destination and land marks? ";
     getline(input_stream, temp_str);
     if (temp_str.find("-") != std::string::npos){ //verify if the landmark list is present
         input_string.str(temp_str.append("\n"));
@@ -66,11 +66,11 @@ TravelPack::TravelPack(std::istream &input_stream){
         destination = str_trim(temp_str);
     }
 
-    std::cout << "\nStart date (yyyy/mm/dd)? ";
+    std::cout << "Start date (yyyy/mm/dd)? ";
     getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     start_date = Date(input_string);
 
-    std::cout << "\nEnd date (yyyy/mm/dd)? ";
+    std::cout << "End date (yyyy/mm/dd)? ";
     getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     end_date = Date(input_string);
     std::cout << std::endl;
@@ -79,11 +79,11 @@ TravelPack::TravelPack(std::istream &input_stream){
         throw std::logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
     }
 
-    std::cout << "\nPrice? ";
+    std::cout << "Price? ";
     input_stream >> price; input_stream.ignore(1000, '\n');
-    std::cout << "\nAvailable seats? ";
+    std::cout << "Available seats? ";
     input_stream >> available_seats; input_stream.ignore(1000, '\n');
-    std::cout << "\nTaken seats? ";
+    std::cout << "Taken seats? ";
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
     std::cout << std::endl;
 
