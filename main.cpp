@@ -133,7 +133,7 @@ void clients_manager(Agency &agency)
                     << "2 - Change existing client\n"
                     << "3 - Delete existing client\n" //TODO: refund packs or not??
                     << "4 - Make a purchase by an existing client\n"
-                    << "0 - Go back" << std::endl; //menu options
+                    << "\nQ - Go back" << std::endl; //menu options
         std::cin >> op; std::cin.ignore(1000, '\n');
         clr_screen();
 
@@ -201,7 +201,7 @@ void travelpack_manager(std::vector<TravelPack> &packet_list){
         std::cout   << "1 - Create new travel pack\n"
                     << "2 - Edit travel pack\n"
                     << "3 - Make travel pack unavailable\n"
-                    << "0 - Go back" << std::endl; //menu options
+                    << "\nQ - Go back" << std::endl; //menu options
         std::cin >> op; std::cin.ignore(1000, '\n');
         //std::cout << std::endl;
 
@@ -334,6 +334,42 @@ void read_info(bool &files_read, Agency &ragency){
 }
 
 
+void write_info(const Agency &agency,const std::string &agencyfile_path,const std::string &clientsfile_path, const std::string &packsfile_path)
+{
+    std::ofstream file_output;
+    
+    file_output.open (agencyfile_path);
+    file_output << agency.name << '\n' << agency.nif << '\n' << agency.url << '\n';
+    agency.address.print(file_output);
+    file_output << clientsfile_path << '\n';
+    file_output << packsfile_path;
+    file_output.close();
+
+    file_output.open (clientsfile_path);
+    int n = agency.client_list.size();
+    for(int i=0;i<n-1;i++)
+    {
+        agency.client_list.at(i).print(file_output);
+        file_output << "::::::::::\n";
+    }
+    agency.client_list[n-1].print(file_output);
+    file_output.close();
+
+    file_output.open (packsfile_path);
+    n = agency.packet_list.size();
+
+    file_output << agency.packet_list.at(n - 1).get_id() << '\n';  // add last package id to the top of the file
+    for(int i=0;i<n-1;i++)
+    {
+        agency.packet_list[i].print(file_output);
+        file_output << "::::::::::\n";
+    }
+    agency.packet_list[n-1].print(file_output);
+
+    file_output.close();
+}
+
+
 void clients_print(std::vector<Client> const &client_list)
 {
     char op; //option selected by user from the menu
@@ -345,7 +381,7 @@ void clients_print(std::vector<Client> const &client_list)
         //TODO: Overload print functions so we have less options and vars
         std::cout   << "1 - Print information about a specific client\n"
                     << "2 - Print information about all clients\n"
-                    << "0 - Exit" << std::endl; //menu options
+                    << "\nQ - Exit" << std::endl; //menu options
 
         std::cin >> op; std::cin.ignore(1000, '\n');
         switch (op){
@@ -390,7 +426,7 @@ void travelpacks_print(std::vector<TravelPack> const &packet_list){
                     << "2 - Print information about a specific destination\n"
                     << "3 - Print information about a specific timespan\n"
                     << "4 - Print information about a specific destination and timespan\n"
-                    << "0 - Exit" << std::endl; //menu options
+                    << "\nQ - Exit" << std::endl; //menu options
 
         std::cin >> op; std::cin.ignore(1000, '\n');
         try{
@@ -471,17 +507,17 @@ int main(){
     std::cout << "Developed by:\tJoao de Jesus Costa - up201806560 (FEUP)\n\t\tJoao Lucas Silva Martins - up2018XXXXX (FEUP)\n" << std::endl;
 
     do{
-        std::cout   << "1  - Read information files\n"
-                    << "2  - Manage clients\n"
-                    << "3  - Manage travel packs\n"
-                    << "4  - Print client's information\n"
-                    << "5  - Print travel packs' information\n"
-                    << "6  - View sold travel packs\n"
-                    << "7  - Number of sold travel packs and profit made\n"
-                    << "8  - Print most visited locals\n"
-                    << "9  - Suggested travel packs for each client\n"
+        std::cout   << "1 - Read information files\n"
+                    << "2 - Manage clients\n"
+                    << "3 - Manage travel packs\n"
+                    << "4 - Print client's information\n"
+                    << "5 - Print travel packs' information\n"
+                    << "6 - View sold travel packs\n"
+                    << "7 - Number of sold travel packs and profit made\n"
+                    << "8 - Print most visited locals\n"
+                    << "9 - Suggested travel packs for each client\n"
                     << "S - Save read agency information to files\n"
-                    << "\nQ  - Exit\n" << std::endl; //menu options
+                    << "\nQ - Exit\n" << std::endl; //menu options
 
         std::cin >> op; std::cin.ignore(1000, '\n');
         switch (op){
@@ -534,8 +570,27 @@ int main(){
             break;
         case 's':
         case 'S':
-            //TODO: save info
+        {
+            std::string agencyfile_path, clientsfile_path, packsfile_path;
+            std::cout << "Insert 'Q' at anytime to go back\n";
+            std::cout << "Agency's information file name? "; std::cin >> agencyfile_path;
+            if(agencyfile_path == "q" || agencyfile_path == "Q") break;
+
+            std::cout << "Clients' information file name? "; std::cin >> clientsfile_path;
+            if(clientsfile_path == "0") break;
+            if(agencyfile_path == clientsfile_path)
+                throw std::invalid_argument("THE FILES FOR THE AGENCY'S AND THE CLIENTS' INFORMATION CAN'T HAVE THE SAME NAME");
+
+            std::cout << "Travel packs' information file name? "; std::cin >> packsfile_path;
+            if(packsfile_path == "0") break;
+            if(packsfile_path == agencyfile_path)
+                throw std::invalid_argument("THE FILES FOR THE AGENCY'S AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
+            if(packsfile_path == clientsfile_path)
+                throw std::invalid_argument("THE FILES FOR THE CLIENTS' AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
+
+            write_info(agency, agencyfile_path, clientsfile_path, packsfile_path);
             break;
+        }
         case 'q':
         case 'Q':
             break;
