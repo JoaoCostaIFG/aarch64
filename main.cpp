@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <sys/stat.h>
+#include <map>
 
 #define clr_screen() std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //clear screen
 #define brk() do { std::cout << "Press the 'enter' key to continue.." << '\n'; getchar(); clr_screen();} while (0); //break function used for waiting for the user
@@ -168,10 +169,9 @@ void clients_manager(Agency &agency)
                 {
                     int packet_index = select_id(agency.packet_list);
                     if(packet_index != -1){
-                        agency.packet_list.at(packet_index).buy_seat(); //Do first because it throws an exception if the travel pack is not available anymore
+                        agency.packet_list.at(packet_index)++; //Do first because it throws an exception if the travel pack is not available anymore
                         agency.client_list[client_index].buyPacket(agency.packet_list, packet_index);
                     }
-                        
                 }
                 
                 brk();
@@ -498,6 +498,8 @@ void profit_made(std::vector<TravelPack> const &packet_list){
 }
 
 
+std::map<std::string, int> dict;
+
 int main(){
     char op; //option selected by user from the menu
     bool files_read = false;
@@ -553,8 +555,23 @@ int main(){
             brk();
             break;
         case '6':
-            //TODO: list sold travel packs to specific client and to all clients
+        {
+            for(int i=0;i<agency.client_list.size();i++)
+            {
+                std::cout << agency.client_list.at(i).getName() << ":\n";
+                for(int j=0;j<agency.client_list.at(i).getPackets().size();j++)
+                {
+                    int index = find_in_vector(agency.packet_list, agency.client_list.at(i).getPackets().at(j));
+                    if(index == -1)
+                        std::cout << "Packet with ID " << agency.client_list.at(i).getPackets().at(j) << " not recognized!\n";
+                    else
+                        agency.packet_list[index].print(std::cout);
+                    std::cout << "::::::::::" << std::endl;
+                }
+            }
+            brk();
             break;
+        }
         case '7':
             if (files_read){
                 profit_made(agency.packet_list);
@@ -619,7 +636,7 @@ int main(){
     ---Gerar e visualizar de modo formatado os pacotes turísticos disponíveis (todos, todos relativos a um destino
     específico, todos entre duas datas, todos os relativos a um destino específico e entre duas datas).
 
-    -Gerar e visualizar de modo formatado os pacotes turísticos vendidos (a um cliente específico, a todos os clientes).
+    ---Gerar e visualizar de modo formatado os pacotes turísticos vendidos (a um cliente específico, a todos os clientes).
 
     ---Efetuar a compra de uma pacote turístico por um cliente.
 

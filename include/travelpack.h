@@ -87,6 +87,16 @@ TravelPack::TravelPack(std::istream &input_stream){
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
     std::cout << std::endl;
 
+    if (has_landmarks()){
+        for(int i = 0; i < landmarks.size(); i++){
+            if (dict.find(landmarks.at(i)) == dict.end()){
+                dict[landmarks.at(i)] = 0;
+            }
+
+            dict[landmarks.at(i)] += taken_seats;
+        }
+    }
+
     rect_availability();
 }
 
@@ -127,6 +137,11 @@ void TravelPack::make_unavailable(){
 void TravelPack::buy_seat(){
     if (!is_available()){
         throw std::logic_error("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n");
+    }
+    if (has_landmarks()){
+        for(int i = 0; i < landmarks.size(); i++){
+            dict[landmarks.at(i)] += 1;
+        }
     }
     taken_seats++;
     rect_availability();
