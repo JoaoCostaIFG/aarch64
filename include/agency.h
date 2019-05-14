@@ -13,6 +13,12 @@
 #include "travelpack.h"
 #include "client.h"
 
+typedef std::pair<int, std::string> dests_visits;
+
+struct cmp_visits{ //Struct as cmp function because operator() is fast and we don't run nto more toubles with lambdas and/or pointers than necessary
+    bool operator() (const dests_visits &a, const dests_visits &b) const
+    {return a.second > b.second;}
+};
 
 typedef struct
 {
@@ -22,6 +28,7 @@ typedef struct
     std::string url;
     std::vector<TravelPack> packet_list;
     std::vector<Client> client_list;
+    std::map<std::string, size_t> map_visits;
 } Agency;
 
 

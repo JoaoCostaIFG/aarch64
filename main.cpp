@@ -5,10 +5,14 @@
 #include <vector>
 #include <sstream>
 #include <sys/stat.h>
+#include <set>
 #include <map>
+#include <utility>
 
 #define clr_screen() std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //clear screen
+#define no_read() do { clr_screen(); std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";} while (0); //displays a message to the user that states that the files haven't been read successfully yet
 #define brk() do { std::cout << "Press the 'enter' key to continue.." << '\n'; getchar(); clr_screen();} while (0); //break function used for waiting for the user
+
 
 std::string str_trim(const std::string& str){
     /*
@@ -32,6 +36,8 @@ bool file_exists(const std::string& name){
     struct stat buffer;
     return (stat (name.c_str(), &buffer) == 0);
 }
+
+std::map<std::string, size_t> *map_ref;
 
 #include "include/date.h"
 #include "include/address.h"
@@ -307,24 +313,35 @@ void read_info(bool &files_read, Agency &ragency){
         // travel pack's file
         int i;
         file_input.open(packsfile_path); file_input.ignore(1000, '\n');
+
+        map_ref = &agency.map_visits; //update the refence to work on the new map
         while(!file_input.eof())
         {
             TravelPack temp_travelpack(file_input);
             file_input.ignore('\n'); file_input.ignore();
+            
             i = find_in_vector(agency.packet_list, temp_travelpack.get_id());
             if (i != -1)
                 throw std::runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
             i = find_in_vector(agency.packet_list, temp_travelpack.get_id() * -1);
             if (i != -1)
                 throw std::runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
+            
+            
             agency.packet_list.push_back(temp_travelpack);
         }
         file_input.close();
 
         ragency = agency; //Reading operation was successful so the information is saved
+        map_ref = &ragency.map_visits; //need to update pointer because the other object will be destroyed
         files_read = true;
+
+        clr_screen();
+        std::cout << "INFORMATION HAS BEEN READ SUCCESSFULLY\n";
+        brk();
     }
     catch(const std::exception& e){
+        map_ref = &ragency.map_visits; //update the refence to go back to the hold map in case of failure
         std::cerr << e.what() << '\n';
         std::cout << "INFORMATION HAS NOT BEEN SAVED/CHANGED\n";
         brk();
@@ -498,7 +515,27 @@ void profit_made(std::vector<TravelPack> const &packet_list){
 }
 
 
-std::map<std::string, int> dict;
+void top_print(){
+    size_t max_packs;
+    std::cout << "What's the maximum of travel packs that should be shown? (0 to go back) ";
+    while(true){
+        std::cin >> max_packs;
+        if(std::cin.fail()){
+            std::cout << "Please insert a valid integer\n";
+            std::cin.clear(); std::cin.ignore(1000, '\n');
+            continue; // re-iterates loop
+        }else
+            break;
+    }
+
+    std::map<std::string, size_t>::iterator it; 
+    for (it = map_ref->begin(); it != map_ref->end(); it++) 
+        std::cout << (*it).first << '\t' << (*it).second << std::endl; 
+    brk();
+    //std::multiset<dests_visits, cmp_visits> set_visits;
+    //std::multiset<dests_visits, cmp_visits>::iterator it2;
+}
+
 
 int main(){
     char op; //option selected by user from the menu
@@ -530,28 +567,28 @@ int main(){
             if (files_read){
                 clients_manager(agency);
             }else
-                std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";
+                no_read();
             brk();
             break;
         case '3':
             if (files_read){
                 travelpack_manager(agency.packet_list);
             }else
-                std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";
+                no_read();
             brk();
             break;
         case '4':
             if (files_read){
                 clients_print(agency.client_list);
             }else
-                std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";
+                no_read();
             brk();
             break;
         case '5':
             if (files_read){
                 travelpacks_print(agency.packet_list);
             }else
-                std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";
+                no_read();
             brk();
             break;
         case '6':
@@ -576,11 +613,15 @@ int main(){
             if (files_read){
                 profit_made(agency.packet_list);
             }else
-                std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";
+                no_read();
             brk();
             break;
         case '8':
-            //TODO: most visited (dict)
+            if (files_read){
+                top_print();
+            }else
+                no_read();
+            brk();
             break;
         case '9':
             //TODO: sugested dests (dict)
