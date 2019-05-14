@@ -63,9 +63,9 @@ Client::Client(std::istream &input_stream)
         }
         catch(const std::exception)
         {
-            throw(std::string("THE ID OF A CLIENT'S PACKETS MUST BE AN INTEGER!\n"));
+            throw std::invalid_argument("THE ID OF A CLIENT'S PACKETS MUST BE AN INTEGER!\n");
         }
-
+        
         packets.push_back(id);
     } while(temp_stream.peek() != '-');
 
@@ -108,8 +108,7 @@ unsigned int Client::getBudget() const
 void Client::buyPacket(std::vector<TravelPack> &packet_list, const int &index)
 {
     if(find_in_vector(packets, packet_list[index].get_id()) != -1)
-        throw(std::string("That packet was already bought by") + name);
-    packet_list[index]++;
+        throw std::runtime_error("That packet was already bought by" + name);
     packets.push_back(index);
 }
 

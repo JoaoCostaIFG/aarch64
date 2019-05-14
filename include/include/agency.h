@@ -13,6 +13,12 @@
 #include "travelpack.h"
 #include "client.h"
 
+typedef std::pair<int, std::string> dests_visits;
+
+struct cmp_visits{ //Struct as cmp function because operator() is fast and we don't run nto more toubles with lambdas and/or pointers than necessary
+    bool operator() (const dests_visits &a, const dests_visits &b) const
+    {return a.second > b.second;}
+};
 
 typedef struct
 {
@@ -22,6 +28,7 @@ typedef struct
     std::string url;
     std::vector<TravelPack> packet_list;
     std::vector<Client> client_list;
+    std::map<std::string, size_t> map_visits;
 } Agency;
 
 
@@ -82,7 +89,7 @@ void modify_client(std::vector<Client> &client_list, int index)
 {
     Client new_client(std::cin);  // any kind of bad input exception will be thrown here
     if(client_exists(client_list, new_client.getName(), new_client.getNif())) //TODO: Check criteria!!
-        throw("Client already exists in the agency!!\n");
+        throw std::runtime_error("Client already exists in the agency!!\n");
     client_list[index] = new_client;
 }
 
@@ -91,9 +98,10 @@ void new_client(std::vector<Client> &client_list)
 {
     Client new_client(std::cin);
     if(client_exists(client_list, new_client.getName(), new_client.getNif())) //TODO: Check criteria!!
-        throw("Client already exists in the agency!!\n");
+        throw std::runtime_error("Client already exists in the agency!!\n");
     client_list.push_back(new_client);
 }
+
 
 void print_clients(std::vector<Client> const &client_list, std::ostream &output_stream)
 {
@@ -106,4 +114,76 @@ void print_clients(std::vector<Client> const &client_list, std::ostream &output_
     client_list[n-1].print(output_stream);
 }
 
+
+void print_travelpacks(std::vector<TravelPack> const &packet_list, std::ostream &output_stream){
+    //print all the travel packs info
+    packet_list.at(0).print(output_stream);
+    for(int i = 1; i < packet_list.size(); i++){
+        output_stream << "::::::::::\n";
+        packet_list.at(i).print(output_stream);
+    }
+}
+void print_travelpacks(std::vector<TravelPack> const &packet_list, std::ostream &output_stream, std::string &dest){
+    //print all the travel packs that list this specific destination
+    bool found = false;
+    unsigned long int i;
+    for(i = 0; i < packet_list.size(); i++){
+        if (packet_list.at(i).get_destination() == dest){
+            found = true;
+            packet_list.at(i).print(output_stream);
+        }
+    }
+
+    for(; i < packet_list.size(); i++){
+        if (packet_list.at(i).get_destination() == dest){
+            output_stream << "::::::::::\n";
+            packet_list.at(i).print(output_stream);
+        }
+    }
+
+    if (!found)
+        throw std::runtime_error("There is no travel pack with that listed destination\n");
+}
+void print_travelpacks(std::vector<TravelPack> const &packet_list, std::ostream &output_stream, Date &startdate, Date &enddate){
+    //print all the travel packs that are within this time span
+    bool found = false;
+    unsigned long int i;
+    for(i = 0; i < packet_list.size(); i++){
+        if (packet_list.at(i).get_start_date() >= startdate && packet_list.at(i).get_end_date() <= enddate){
+            found = true;
+            packet_list.at(i).print(output_stream);
+        }
+    }
+
+    for(; i < packet_list.size(); i++){
+        if (packet_list.at(i).get_start_date() >= startdate && packet_list.at(i).get_end_date() <= enddate){
+            output_stream << "::::::::::\n";
+            packet_list.at(i).print(output_stream);
+        }
+    }
+
+    if (!found)
+        throw std::runtime_error("There is no travel pack within that timespan\n");
+}
+void print_travelpacks(std::vector<TravelPack> const &packet_list, std::ostream &output_stream, Date &startdate, Date &enddate, std::string &dest){
+    //print all the travel packs that are within this time span and have the specified destination listed
+    bool found = false;
+    unsigned long int i;
+    for(i = 0; i < packet_list.size(); i++){
+        if (packet_list.at(i).get_start_date() >= startdate && packet_list.at(i).get_end_date() <= enddate && packet_list.at(i).get_destination() == dest){
+            found = true;
+            packet_list.at(i).print(output_stream);
+        }
+    }
+
+    for(; i < packet_list.size(); i++){
+        if (packet_list.at(i).get_start_date() >= startdate && packet_list.at(i).get_end_date() <= enddate && packet_list.at(i).get_destination() == dest){
+            output_stream << "::::::::::\n";
+            packet_list.at(i).print(output_stream);
+        }
+    }
+
+    if (!found)
+        throw std::runtime_error("There is no travel pack within that timespan\n");
+}
 #endif

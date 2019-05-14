@@ -53,9 +53,9 @@ Date::Date(std::istream &input_stream)
 
 void Date::print(std::ostream &output_stream) const
 {
-    output_stream << "Year: " << year;
-    output_stream << "\nMonth: " << month;
-    output_stream << "\nDay: " << day << std::endl;
+    output_stream   << year << '/'
+                    << month << '/'
+                    << day << std::endl;
 }
 
 
