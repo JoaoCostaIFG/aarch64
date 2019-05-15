@@ -13,6 +13,12 @@
 #include "travelpack.h"
 #include "client.h"
 
+typedef std::pair<size_t, std::string> dests_visits;
+
+struct cmp_visits{ //Struct as cmp function because operator() is fast and we don't run nto more toubles with lambdas and/or pointers than necessary
+    bool operator() (const dests_visits &a, const dests_visits &b) const
+    {return a.first > b.first;}
+};
 
 typedef struct
 {
@@ -22,6 +28,7 @@ typedef struct
     std::string url;
     std::vector<TravelPack> packet_list;
     std::vector<Client> client_list;
+    std::map<std::string, map_vistis_id> map_visits;
 } Agency;
 
 
@@ -49,7 +56,7 @@ int find_in_vector(std::vector<Temp> const &vec, Temp const &t)
 int find_in_vector(std::vector<TravelPack> const &vec, const int &id)
 {
     for(int i=0;i<vec.size();i++)
-        if(vec[i].get_id() == id)
+        if(abs(vec[i].get_id()) == abs(id))
             return i;
     return -1;
 }
