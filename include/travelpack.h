@@ -6,6 +6,7 @@ class TravelPack{
     public:
         TravelPack();
         TravelPack(std::istream &input_stream);
+        TravelPack(std::istream &input_stream, TravelPack const &old_tp);
         void print(std::ostream &output_stream) const;
         void buy_seat();
         void make_unavailable();
@@ -23,6 +24,7 @@ class TravelPack{
     private:
         bool id_validity();
         void rect_availability();
+        void cleanup_oldmap(TravelPack const &old_tp);
         int id;
         std::string destination;
         std::vector<std::string> landmarks;
@@ -46,7 +48,6 @@ TravelPack::TravelPack(std::istream &input_stream){
     std::string temp_str;
     std::istringstream input_string;
 
-    // TODO: Verify duplicated ids
     std::cout << "ID (negative IDs make the travel pack unavailable)? ";
     input_stream >> id; input_stream.ignore(1000, '\n');
 
@@ -87,24 +88,95 @@ TravelPack::TravelPack(std::istream &input_stream){
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
     std::cout << std::endl;
 
+    rect_availability();
+
     if (map_ref->find(destination) == map_ref->end()){
-        (*map_ref)[destination] = 0;
+        (*map_ref)[destination].first = 0;
+        if (is_available())
+            (*map_ref)[destination].second.insert(id);
     }
-    (*map_ref)[destination] += taken_seats;
+    (*map_ref)[destination].first += taken_seats;
 
 
     if (has_landmarks()){
         for(int i = 0; i < landmarks.size(); i++){
             if (map_ref->find(landmarks.at(i)) == map_ref->end()){
-                (*map_ref)[landmarks.at(i)] = 0;
+                (*map_ref)[landmarks.at(i)].first = 0;
+                if (is_available())
+                    (*map_ref)[landmarks.at(i)].second.insert(id);
             }
-            (*map_ref)[landmarks.at(i)] += taken_seats;
+            (*map_ref)[landmarks.at(i)].first += taken_seats;
         }
     }
+}
+TravelPack::TravelPack(std::istream &input_stream, TravelPack const &old_tp){
+    std::string temp_str;
+    std::istringstream input_string;
+
+    id = old_tp.get_id();
+
+    std::cout << "Destination and land marks? ";
+    getline(input_stream, temp_str);
+    if (temp_str.find("-") != std::string::npos){ //verify if the landmark list is present
+        input_string.str(temp_str.append("\n"));
+        getline(input_string, destination, '-'); destination = str_trim(destination);
+        getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n"));
+        while(input_string.peek() != '\n'){
+            getline(input_string, temp_str, ','); temp_str = str_trim(temp_str);
+            if (temp_str.length() != 0)
+                landmarks.push_back(temp_str);
+        }
+
+    }else{
+        destination = str_trim(temp_str);
+    }
+
+    std::cout << "Start date (yyyy/mm/dd)? ";
+    getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
+    start_date = Date(input_string);
+
+    std::cout << "End date (yyyy/mm/dd)? ";
+    getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
+    end_date = Date(input_string);
+    std::cout << std::endl;
+
+    if(start_date > end_date){
+        throw std::logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
+    }
+
+    std::cout << "Price? ";
+    input_stream >> price; input_stream.ignore(1000, '\n');
+    std::cout << "Available seats? ";
+    input_stream >> available_seats; input_stream.ignore(1000, '\n');
+    std::cout << "Taken seats? ";
+    input_stream >> taken_seats; input_stream.ignore(1000, '\n');
+    std::cout << std::endl;
 
     rect_availability();
-}
 
+    // CLean-up "trash" left from the old version of this travel pack in the map
+    cleanup_oldmap(old_tp);
+
+    //update map with edited travel pack info
+    if (map_ref->find(destination) == map_ref->end()){
+        (*map_ref)[destination].first = 0;
+        if (is_available())
+            (*map_ref)[destination].second.insert(id);
+    }
+    (*map_ref)[destination].first += taken_seats;
+
+
+    if (has_landmarks()){
+        for(int i = 0; i < landmarks.size(); i++){
+            if (map_ref->find(landmarks.at(i)) == map_ref->end()){
+                (*map_ref)[landmarks.at(i)].first = 0;
+                if (is_available())
+                    (*map_ref)[landmarks.at(i)].second.insert(id);
+            }
+            (*map_ref)[landmarks.at(i)].first += taken_seats;
+        }
+    }
+}
 
 void TravelPack::print(std::ostream &output_stream) const{
     output_stream << id << std::endl;
@@ -124,6 +196,27 @@ void TravelPack::print(std::ostream &output_stream) const{
 }
 
 
+void TravelPack::cleanup_oldmap(TravelPack const &old_tp){
+    // CLean-up "trash" left from the old version of this travel pack in the map
+    (*map_ref)[old_tp.get_destination()].first -= old_tp.get_taken_seats();
+    
+    if ((*map_ref)[old_tp.get_destination()].first <= 0)
+        (*map_ref).erase(map_ref->find(old_tp.get_destination()));
+    else
+        (*map_ref)[old_tp.get_destination()].second.erase((*map_ref)[old_tp.get_destination()].second.find(old_tp.get_id()));
+
+    if (old_tp.has_landmarks()){
+        for(int i = 0; i < old_tp.get_landmarks().size(); i++){
+            (*map_ref)[old_tp.get_landmarks().at(i)].first -= old_tp.get_taken_seats();
+            if((*map_ref)[old_tp.get_landmarks().at(i)].first <= 0)
+                (*map_ref).erase(map_ref->find(old_tp.get_landmarks().at(i)));
+            else
+                (*map_ref)[old_tp.get_landmarks().at(i)].second.erase((*map_ref)[old_tp.get_landmarks().at(i)].second.find(old_tp.get_id()));
+        }
+    }
+}
+
+
 void TravelPack::rect_availability(){
     if (taken_seats >= available_seats && id > 0){
         id *= -1;
@@ -135,6 +228,14 @@ void TravelPack::make_unavailable(){
     if (!is_available()){
         throw std::logic_error("TRAVEL PACK IS ALREADY UNAVAILABLE\n");
     }
+
+    (*map_ref)[get_destination()].second.erase((*map_ref)[get_destination()].second.find(get_id()));
+    if (has_landmarks()){
+        for(int i = 0; i < get_landmarks().size(); i++){
+            (*map_ref)[get_landmarks().at(i)].second.erase((*map_ref)[get_landmarks().at(i)].second.find(get_id()));
+        }
+    }
+
     id *= -1;
 }
 
@@ -144,10 +245,10 @@ void TravelPack::buy_seat(){
         throw std::logic_error("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n");
     }
 
-    (*map_ref)[destination] += 1;
+    (*map_ref)[destination].first += 1;
     if (has_landmarks()){
         for(int i = 0; i < landmarks.size(); i++){
-            (*map_ref)[landmarks.at(i)] += 1;
+            (*map_ref)[landmarks.at(i)].first += 1;
         }
     }
 

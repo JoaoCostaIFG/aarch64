@@ -13,6 +13,7 @@
 #define no_read() do { clr_screen(); std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";} while (0); //displays a message to the user that states that the files haven't been read successfully yet
 #define brk() do { std::cout << "Press the 'enter' key to continue.." << '\n'; getchar(); clr_screen();} while (0); //break function used for waiting for the user
 
+typedef std::pair<size_t, std::set<size_t>> map_vistis_id;
 
 std::string str_trim(const std::string& str){
     /*
@@ -37,7 +38,7 @@ bool file_exists(const std::string& name){
     return (stat (name.c_str(), &buffer) == 0);
 }
 
-std::map<std::string, size_t> *map_ref;
+std::map<std::string, map_vistis_id> *map_ref;
 
 #include "include/date.h"
 #include "include/address.h"
@@ -56,7 +57,6 @@ int find_in_vector(std::vector<Client> const &vec, const std::string &name);
     /* Returns the position of the client which has the same name as name. Returns -1 if no client with the given name is found.*/
 
 #include "include/agency.h"
-
 
 int select_client(const std::vector<Client> &client_list)
 {
@@ -205,7 +205,7 @@ void travelpack_manager(std::vector<TravelPack> &packet_list){
     clr_screen();
     do{
         std::cout   << "1 - Create new travel pack\n"
-                    << "2 - Edit travel pack\n"
+                    << "2 - Edit travel pack (ID can't be changed)\n"
                     << "3 - Make travel pack unavailable\n"
                     << "\nQ - Go back" << std::endl; //menu options
         std::cin >> op; std::cin.ignore(1000, '\n');
@@ -227,17 +227,20 @@ void travelpack_manager(std::vector<TravelPack> &packet_list){
                 brk();
                 break;
             }
-            case '2':
+            case '2':{
                 id = select_id(packet_list);
                 if (id == -1){
                     brk();
                     break;
                 }
+                
+                packet_list.at(id) = TravelPack(std::cin, packet_list.at(id));
 
-                packet_list.at(id) = TravelPack(std::cin);
                 brk();
                 break;
+            }
             case '3':
+                clr_screen();
                 id = select_id(packet_list);
                 if (id == -1){
                     brk();
@@ -515,8 +518,91 @@ void profit_made(std::vector<TravelPack> const &packet_list){
 }
 
 
+void bought_travelpacks_print(std::vector<TravelPack> const &packet_list, std::vector<Client> const &client_list){
+    char op; //option selected by user from the menu
+    bool files_read = false;
+
+    clr_screen();
+
+    do{
+        //TODO: Overload print functions so we have less options and vars
+        std::cout   << "1 - Print information about all clients' travel packs\n"
+                    << "2 - Print information about a specific client's  travel packs\n"
+                    << "\nQ - Exit" << std::endl; //menu options
+
+        std::cin >> op; std::cin.ignore(1000, '\n');
+        try{
+            switch (op){
+            case '1':
+            {
+                for(int i=0;i<client_list.size();i++)
+                {
+                    std::cout << client_list.at(i).getName() << ":\n";
+                    for(int j=0;j<client_list.at(i).getPackets().size();j++)
+                    {
+                        int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
+                        if(index == -1)
+                            std::cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
+                        else
+                            packet_list[index].print(std::cout);
+                        std::cout << "::::::::::" << std::endl;
+                    }
+                }
+                brk();
+                break;
+            }
+            case '2':
+            {   
+                int client_index = select_client(client_list);
+                if(client_index != -1)
+                {
+                    std::cout << client_list.at(client_index).getName() << ":\n";
+                    for(int i=0;i<client_list.at(client_index).getPackets().size();i++)
+                    {
+                        int packet_index = find_in_vector(packet_list, client_list.at(client_index).getPackets().at(i));
+                        if(packet_index == -1)
+                            std::cout << "Packet with ID " << client_list.at(client_index).getPackets().at(i) << " not recognized!\n";
+                        else
+                            packet_list[packet_index].print(std::cout);
+                        std::cout << "::::::::::" << std::endl;
+                    }
+                }
+                brk();
+                break;
+            }
+            case 'q':
+            case 'Q':
+                break;
+            default:
+                std::cout << "THERE IS NO SUCH OPTION\n";
+                brk();
+                break;
+            }    
+        }
+        catch(const std::exception& e){
+            brk();
+            std::cerr << e.what() << '\n';
+        }
+
+    }while (op != 'q' && op != 'Q');
+}
+
+
+std::multiset<dests_visits, cmp_visits> make_set_from_map(){
+    /*Creates and returns a multiset made from the cisited locals map.
+    The multiset contains pairs of <size_t, std::string> and sorts itself by the size_t in descending order*/
+    std::map<std::string, map_vistis_id>::iterator it;
+    std::multiset<dests_visits, cmp_visits> set_visits;
+    for (it = map_ref->begin(); it != map_ref->end(); it++)
+        set_visits.insert(std::make_pair((*it).second.first, (*it).first));
+    return set_visits;
+}
+
+
 void top_print(){
     size_t max_packs;
+    clr_screen();
+
     std::cout << "What's the maximum of travel packs that should be shown? (0 to go back) ";
     while(true){
         std::cin >> max_packs;
@@ -524,18 +610,63 @@ void top_print(){
             std::cout << "Please insert a valid integer\n";
             std::cin.clear(); std::cin.ignore(1000, '\n');
             continue; // re-iterates loop
-        }else
+        }else{
+            std::cin.ignore(1000, '\n');
             break;
+        }
     }
 
-    std::map<std::string, size_t>::iterator it; 
-    for (it = map_ref->begin(); it != map_ref->end(); it++) 
-        std::cout << (*it).first << '\t' << (*it).second << std::endl; 
-    brk();
-    //std::multiset<dests_visits, cmp_visits> set_visits;
-    //std::multiset<dests_visits, cmp_visits>::iterator it2;
+    if(max_packs == 0)
+        return;
+
+    std::multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
+    std::multiset<dests_visits, cmp_visits>::iterator it;
+
+    std::cout << "Destinations are ordered from most popular to least popular (When popularity is the same, the travel packs are ordered by name)\n" << std::endl;
+    for (it = set_visits.begin(); it != set_visits.end() && max_packs > 0; it++)
+        std::cout << (*it).second << ' ' << '(' << (*it).first << " bought seats)\n";
+    std::cout << std::endl;
 }
 
+void ai(std::vector<TravelPack> const &packet_list, std::vector<Client> const &client_list){
+    std::multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
+    std::multiset<dests_visits, cmp_visits>::iterator it;
+    clr_screen();
+
+    for(size_t i = 0; i < client_list.size(); i++){ //iterates through all clients
+        //The set clientvisits will contain all the locations visited by this client's bough travel packs
+        std::set<std::string> clientvisits;
+        for(size_t j = 0; j < client_list.at(i).getPackets().size(); j++){
+            int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
+            if (index != -1){
+                clientvisits.insert(packet_list.at(index).get_destination());
+                if (packet_list.at(index).has_landmarks()){
+                    for (size_t k = 0; k < packet_list.at(index).get_landmarks().size(); k++){
+                        clientvisits.insert(packet_list.at(index).get_landmarks().at(k));
+                    }
+                }
+            }
+        }
+
+        //looks at travel packs that list locations not visited by the current client's bought travel packs
+        bool not_found = true;
+        for (it = set_visits.begin(); it != set_visits.end(); it++){
+            if ((*map_ref)[(*it).second].second.size() != 0 && clientvisits.find((*it).second) == clientvisits.end()){ //it only selects available travel packs for suggestion
+                not_found = false;
+                std::cout   << "The client '" << client_list.at(i).getName()
+                            << "' should buy the travel pack with the id " << (*(*map_ref)[(*it).second].second.begin())
+                            << " because '" << (*it).second << "' is the most popular location that he hasn't visited\n";
+                break;
+            }
+        }
+
+        if (not_found) //in case there were no suggestions to be made
+            std::cout   << "The client '" << client_list.at(i).getName() 
+                        << "' has visited/will visit all the locations offered by the agency's AVAILABLE travel packs already."
+                        << " No suggestions to be made.\n";
+        std::cout << std::endl;
+    } 
+}
 
 int main(){
     char op; //option selected by user from the menu
@@ -564,67 +695,62 @@ int main(){
             read_info(files_read, agency);
             break;
         case '2':
-            if (files_read){
+            if (files_read)
                 clients_manager(agency);
-            }else
+            else
                 no_read();
             brk();
             break;
         case '3':
-            if (files_read){
+            if (files_read)
                 travelpack_manager(agency.packet_list);
-            }else
+            else
                 no_read();
             brk();
             break;
         case '4':
-            if (files_read){
+            if (files_read)
                 clients_print(agency.client_list);
-            }else
+            else
                 no_read();
             brk();
             break;
         case '5':
-            if (files_read){
+            if (files_read)
                 travelpacks_print(agency.packet_list);
-            }else
+            else
                 no_read();
             brk();
             break;
         case '6':
         {
-            for(int i=0;i<agency.client_list.size();i++)
-            {
-                std::cout << agency.client_list.at(i).getName() << ":\n";
-                for(int j=0;j<agency.client_list.at(i).getPackets().size();j++)
-                {
-                    int index = find_in_vector(agency.packet_list, agency.client_list.at(i).getPackets().at(j));
-                    if(index == -1)
-                        std::cout << "Packet with ID " << agency.client_list.at(i).getPackets().at(j) << " not recognized!\n";
-                    else
-                        agency.packet_list[index].print(std::cout);
-                    std::cout << "::::::::::" << std::endl;
-                }
-            }
+            if (files_read)
+                bought_travelpacks_print(agency.packet_list, agency.client_list);
+            else
+                no_read();
             brk();
             break;
         }
         case '7':
-            if (files_read){
+            if (files_read)
                 profit_made(agency.packet_list);
-            }else
+            else
                 no_read();
             brk();
             break;
         case '8':
-            if (files_read){
+            if (files_read)
                 top_print();
-            }else
+            else
                 no_read();
             brk();
             break;
         case '9':
-            //TODO: sugested dests (dict)
+            if (files_read)
+                ai(agency.packet_list, agency.client_list);
+            else
+                no_read();
+            brk();
             break;
         case 's':
         case 'S':
@@ -665,7 +791,7 @@ int main(){
 }
 /*
     TODO
-    -Ler e guardar a informação da agência, dos clientes e dos pacotes turísticos armazenada em ficheiros.
+    ---Ler e guardar a informação da agência, dos clientes e dos pacotes turísticos armazenada em ficheiros.
 
     ---Gerir os clientes e pacotes turísticos: criar, alterar e remover um cliente; criar, alterar ou colocar como
     indisponível um pacote turístico (nota: os pacotes turísticos nunca são efetivamente removidos.
@@ -683,7 +809,7 @@ int main(){
 
     ---Calcular e visualizar o número e o valor total de pacotes vendidos.
 
-    -Obter o nome dos N locais mais visitados (um pacote pode incluir visitas a vários locais), ordenados por ordem
+    ---Obter o nome dos N locais mais visitados (um pacote pode incluir visitas a vários locais), ordenados por ordem
     decrescente do número de visitas ( = número de pacotes vendidos que passam por esse local).
 
     -Gerar uma listagem de todos os clientes na qual se indica, para cada cliente, um dos pacotes em que seja

@@ -59,7 +59,7 @@ Client::Client(std::istream &input_stream)
         int id;
         try
         {
-            id = stoi(temp_str);
+            id = abs(stoi(temp_str));
         }
         catch(const std::exception)
         {

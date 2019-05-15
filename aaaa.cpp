@@ -30,11 +30,12 @@ struct cmp{
 };
 int main(){
 
-    std::multiset<A, cmp> b;
-    std::multiset<A, cmp> ::iterator it;
+    std::set<A, cmp> b;
+    std::set<A, cmp> ::iterator it;
     
-    A a = std::make_pair(std::string("AAA"), 3);
-    b.insert(a);
+    //A a = std::make_pair(std::string("AAA"), 3);
+    A a;
+    b.insert(std::make_pair(std::string("AAA"), 3));
     a = std::make_pair(std::string("BB"), 2);
     b.insert(a);
     a = std::make_pair(std::string("C"), 2);
@@ -43,11 +44,13 @@ int main(){
     if (b.find(std::make_pair(std::string(""), 4)) == b.begin()){
         std::cout << "AAAAAAAAAAAA\n";
     }
+    it = b.begin();
+    std::cout << "\nhey " << (*b.begin()).first << "\n";
     //std::cout << (*b.find(std::make_pair(3, std::string("AA")))).first << '\n';
     //b.erase(b.find(std::make_pair(5, std::string(""))));
     std::cout << '\n';
     for(it = b.begin(); it != b.end(); it++){
-        std::cout << ' ' << (*it).second;
+        std::cout << ' ' << (*it).first;
     }
 
     /*
