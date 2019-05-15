@@ -5,17 +5,17 @@
 class TravelPack{
     public:
         TravelPack();
-        TravelPack(std::istream &input_stream);
-        TravelPack(std::istream &input_stream, TravelPack const &old_tp);
-        void print(std::ostream &output_stream) const;
+        TravelPack(istream &input_stream);
+        TravelPack(istream &input_stream, TravelPack const &old_tp);
+        void print(ostream &output_stream) const;
         void buy_seat();
         void make_unavailable();
         //Getters
         bool is_available() const;
         int get_id() const;
-        std::string get_destination() const;
+        string get_destination() const;
         bool has_landmarks() const;
-        std::vector<std::string> get_landmarks() const;
+        vector<string> get_landmarks() const;
         Date get_start_date() const;
         Date get_end_date() const;
         float get_price() const;
@@ -26,8 +26,8 @@ class TravelPack{
         void rect_availability();
         void cleanup_oldmap(TravelPack const &old_tp);
         int id;
-        std::string destination;
-        std::vector<std::string> landmarks;
+        string destination;
+        vector<string> landmarks;
         Date start_date;
         Date end_date;
         float price;
@@ -44,16 +44,16 @@ TravelPack::TravelPack(){
     available_seats = 0;
     taken_seats = 0;
 }
-TravelPack::TravelPack(std::istream &input_stream){
-    std::string temp_str;
-    std::istringstream input_string;
+TravelPack::TravelPack(istream &input_stream){
+    string temp_str;
+    istringstream input_string;
 
-    std::cout << "ID (negative IDs make the travel pack unavailable)? ";
+    cout << "ID (negative IDs make the travel pack unavailable)? ";
     input_stream >> id; input_stream.ignore(1000, '\n');
 
-    std::cout << "Destination and land marks? ";
+    cout << "Destination and land marks? ";
     getline(input_stream, temp_str);
-    if (temp_str.find("-") != std::string::npos){ //verify if the landmark list is present
+    if (temp_str.find("-") != string::npos){ //verify if the landmark list is present
         input_string.str(temp_str.append("\n"));
         getline(input_string, destination, '-'); destination = str_trim(destination);
         getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n"));
@@ -67,26 +67,26 @@ TravelPack::TravelPack(std::istream &input_stream){
         destination = str_trim(temp_str);
     }
 
-    std::cout << "Start date (yyyy/mm/dd)? ";
+    cout << "Start date (yyyy/mm/dd)? ";
     getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     start_date = Date(input_string);
 
-    std::cout << "End date (yyyy/mm/dd)? ";
+    cout << "End date (yyyy/mm/dd)? ";
     getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     end_date = Date(input_string);
-    std::cout << std::endl;
+    cout << endl;
 
     if(start_date > end_date){
-        throw std::logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
+        throw logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
     }
 
-    std::cout << "Price? ";
+    cout << "Price? ";
     input_stream >> price; input_stream.ignore(1000, '\n');
-    std::cout << "Available seats? ";
+    cout << "Available seats? ";
     input_stream >> available_seats; input_stream.ignore(1000, '\n');
-    std::cout << "Taken seats? ";
+    cout << "Taken seats? ";
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
-    std::cout << std::endl;
+    cout << endl;
 
     rect_availability();
 
@@ -109,15 +109,15 @@ TravelPack::TravelPack(std::istream &input_stream){
         }
     }
 }
-TravelPack::TravelPack(std::istream &input_stream, TravelPack const &old_tp){
-    std::string temp_str;
-    std::istringstream input_string;
+TravelPack::TravelPack(istream &input_stream, TravelPack const &old_tp){
+    string temp_str;
+    istringstream input_string;
 
     id = old_tp.get_id();
 
-    std::cout << "Destination and land marks? ";
+    cout << "Destination and land marks? ";
     getline(input_stream, temp_str);
-    if (temp_str.find("-") != std::string::npos){ //verify if the landmark list is present
+    if (temp_str.find("-") != string::npos){ //verify if the landmark list is present
         input_string.str(temp_str.append("\n"));
         getline(input_string, destination, '-'); destination = str_trim(destination);
         getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n"));
@@ -131,26 +131,26 @@ TravelPack::TravelPack(std::istream &input_stream, TravelPack const &old_tp){
         destination = str_trim(temp_str);
     }
 
-    std::cout << "Start date (yyyy/mm/dd)? ";
+    cout << "Start date (yyyy/mm/dd)? ";
     getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     start_date = Date(input_string);
 
-    std::cout << "End date (yyyy/mm/dd)? ";
+    cout << "End date (yyyy/mm/dd)? ";
     getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
     end_date = Date(input_string);
-    std::cout << std::endl;
+    cout << endl;
 
     if(start_date > end_date){
-        throw std::logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
+        throw logic_error("END DATE CAN'T BE LOWER THAN START DATE\n");
     }
 
-    std::cout << "Price? ";
+    cout << "Price? ";
     input_stream >> price; input_stream.ignore(1000, '\n');
-    std::cout << "Available seats? ";
+    cout << "Available seats? ";
     input_stream >> available_seats; input_stream.ignore(1000, '\n');
-    std::cout << "Taken seats? ";
+    cout << "Taken seats? ";
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
-    std::cout << std::endl;
+    cout << endl;
 
     rect_availability();
 
@@ -179,8 +179,8 @@ TravelPack::TravelPack(std::istream &input_stream, TravelPack const &old_tp){
 }
 
 
-void TravelPack::print(std::ostream &output_stream) const{
-    output_stream << id << std::endl;
+void TravelPack::print(ostream &output_stream) const{
+    output_stream << id << endl;
     output_stream << destination;
     if (has_landmarks()){
         output_stream << " - " << landmarks.at(0);
@@ -188,12 +188,12 @@ void TravelPack::print(std::ostream &output_stream) const{
             output_stream << ", " << landmarks.at(i);
         
     }
-    output_stream << std::endl;
+    output_stream << endl;
     start_date.print(output_stream);
     end_date.print(output_stream);
-    output_stream << price << std::endl;
-    output_stream << available_seats << std::endl;
-    output_stream << taken_seats << std::endl;
+    output_stream << price << endl;
+    output_stream << available_seats << endl;
+    output_stream << taken_seats << endl;
 }
 
 
@@ -227,7 +227,7 @@ void TravelPack::rect_availability(){
 
 void TravelPack::make_unavailable(){
     if (!is_available()){
-        throw std::logic_error("TRAVEL PACK IS ALREADY UNAVAILABLE\n");
+        throw logic_error("TRAVEL PACK IS ALREADY UNAVAILABLE\n");
     }
 
     (*map_ref)[get_destination()].second.erase((*map_ref)[get_destination()].second.find(get_id()));
@@ -243,7 +243,7 @@ void TravelPack::make_unavailable(){
 
 void TravelPack::buy_seat(){
     if (!is_available()){
-        throw std::logic_error("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n");
+        throw logic_error("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n");
     }
 
     (*map_ref)[destination].first += 1;
@@ -269,7 +269,7 @@ bool TravelPack::is_available() const{
 int TravelPack::get_id() const{
     return id;
 }
-std::string TravelPack::get_destination() const{
+string TravelPack::get_destination() const{
     return destination;
 }
 bool TravelPack::has_landmarks() const{
@@ -277,7 +277,7 @@ bool TravelPack::has_landmarks() const{
         return false;
     return true;
 }
-std::vector<std::string> TravelPack::get_landmarks() const{
+vector<string> TravelPack::get_landmarks() const{
     return landmarks;
 }
 Date TravelPack::get_start_date() const{

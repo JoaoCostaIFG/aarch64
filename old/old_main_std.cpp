@@ -8,15 +8,14 @@
 #include <set>
 #include <map>
 #include <utility>
-using namespace std;
 
-#define clr_screen() cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //clear screen
-#define no_read() do { clr_screen(); cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";} while (0); //displays a message to the user that states that the files haven't been read successfully yet
-#define brk() do { cout << "Press the 'enter' key to continue.." << '\n'; getchar(); clr_screen();} while (0); //break function used for waiting for the user
+#define clr_screen() std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //clear screen
+#define no_read() do { clr_screen(); std::cout << "FILES HAVEN'T BEEN SUCCESSFULLY READ YET\n";} while (0); //displays a message to the user that states that the files haven't been read successfully yet
+#define brk() do { std::cout << "Press the 'enter' key to continue.." << '\n'; getchar(); clr_screen();} while (0); //break function used for waiting for the user
 
-typedef pair<size_t, set<size_t>> map_vistis_id;
+typedef std::pair<size_t, std::set<size_t>> map_vistis_id;
 
-string str_trim(const string& str){
+std::string str_trim(const std::string& str){
     /*
         Trims a string of whitespaces in the beggining and end;
         Takes a string to trim as an argument;
@@ -28,7 +27,7 @@ string str_trim(const string& str){
     return (str.substr(str.find_first_not_of(" "), str.find_last_not_of(" ") - str.find_first_not_of(" ") + 1));
 }
 
-bool file_exists(const string& name){
+bool file_exists(const std::string& name){
     /*
         Checks if a given file exists;
         Takes a string specifing the path to the file to check as an argument;
@@ -39,7 +38,7 @@ bool file_exists(const string& name){
     return (stat (name.c_str(), &buffer) == 0);
 }
 
-map<string, map_vistis_id> *map_ref;
+std::map<std::string, map_vistis_id> *map_ref;
 
 #include "include/date.h"
 #include "include/address.h"
@@ -47,32 +46,32 @@ map<string, map_vistis_id> *map_ref;
 
 // these functions are used by clients.h so they must be here 
 template <class Temp>
-int find_in_vector(vector<Temp> const &vec, Temp const &t);
+int find_in_vector(std::vector<Temp> const &vec, Temp const &t);
     /* Returns the index of element t in the vector. Returns -1 if t isn't found in vec.*/
-int find_in_vector(vector<TravelPack> const &vec, const int &id);
+int find_in_vector(std::vector<TravelPack> const &vec, const int &id);
     /* Returns the position of the travel pack which has the same identificator as id. Returns -1 if no travel packet with id is found.*/
 
 #include "include/client.h"
 
-int find_in_vector(vector<Client> const &vec, const string &name);
+int find_in_vector(std::vector<Client> const &vec, const std::string &name);
     /* Returns the position of the client which has the same name as name. Returns -1 if no client with the given name is found.*/
 
 #include "include/agency.h"
 
-int select_client(const vector<Client> &client_list)
+int select_client(const std::vector<Client> &client_list)
 {
     /*Forces the user to enter a valid client name. Returns the index of the client with the name given by the user.
     @param client_list: Vector used to see if the given name exists.
     @param result: The index of the client with the name given by the user. Returns -1 if the user opted-out*/
 
-    string name;
+    std::string name;
     int index = -1;
 
     while(name != "-1")
     {
-        cout << "Insert the client name.\n";
-        cout << "\nTo cancel type -1\n";
-        getline(cin, name);
+        std::cout << "Insert the client name.\n";
+        std::cout << "\nTo cancel type -1\n";
+        getline(std::cin, name);
         index = find_in_vector(client_list, name);
 
         if(index != -1)
@@ -80,7 +79,7 @@ int select_client(const vector<Client> &client_list)
          else 
             {
             if(name != "-1")
-                cout << "No such client with that name. Please try again\n";
+                std::cout << "No such client with that name. Please try again\n";
         }
     }
 
@@ -88,7 +87,7 @@ int select_client(const vector<Client> &client_list)
 }
 
 
-int select_id(const vector<TravelPack> &packet_list)
+int select_id(const std::vector<TravelPack> &packet_list)
 {
     /*Forces the user to enter a valid packet ID. Returns the index of the package with the ID given by the user.
     @param packet_list: Vector used to see if the given id exists.
@@ -99,16 +98,16 @@ int select_id(const vector<TravelPack> &packet_list)
 
     while((!sucess)&(index_of_packet != 0))
     {
-        cout << "Insert the Id of the travel pack.\nType 0 to go back\n";
-        cin >> index_of_packet;
-        if(cin.fail())
+        std::cout << "Insert the Id of the travel pack.\nType 0 to go back\n";
+        std::cin >> index_of_packet;
+        if(std::cin.fail())
         {
-            cout << "Please insert a valid integer\n";
-            cin.clear(); cin.ignore(1000, '\n');
+            std::cout << "Please insert a valid integer\n";
+            std::cin.clear(); std::cin.ignore(1000, '\n');
             continue; // re-iterates loop
         }
 
-        //index_of_packet = abs(index_of_packet);
+        index_of_packet = abs(index_of_packet);
         id_in_vector = find_in_vector(packet_list, index_of_packet);
 
         if(id_in_vector != -1) // if found, sucess!
@@ -121,7 +120,7 @@ int select_id(const vector<TravelPack> &packet_list)
                 sucess = true;
             else{
                 // sucess = false; not needed because sucess if by default set to false
-                cout << "There isn't any packet that has the given id. Please try again.\n";
+                std::cout << "There isn't any packet that has the given id. Please try again.\n";
             } 
         }
     }
@@ -137,12 +136,12 @@ void clients_manager(Agency &agency)
     int id; //option selected by user from the menu
     clr_screen();
     do{
-        cout    << "1 - Create new client\n"
-                << "2 - Change existing client\n"
-                << "3 - Delete existing client\n" //TODO: refund packs or not??
-                << "4 - Make a purchase by an existing client\n"
-                << "\nQ - Go back" << endl; //menu options
-        cin >> op; cin.ignore(1000, '\n');
+        std::cout   << "1 - Create new client\n"
+                    << "2 - Change existing client\n"
+                    << "3 - Delete existing client\n" //TODO: refund packs or not??
+                    << "4 - Make a purchase by an existing client\n"
+                    << "\nQ - Go back" << std::endl; //menu options
+        std::cin >> op; std::cin.ignore(1000, '\n');
         clr_screen();
 
         try{
@@ -188,41 +187,41 @@ void clients_manager(Agency &agency)
             case 'Q':
                 break;
             default:
-                cout << "THERE IS NO SUCH OPTION\n";
+                std::cout << "THERE IS NO SUCH OPTION\n";
                 brk();
                 break;
             }
         }
-        catch(const exception& e){
-            cerr << e.what() << '\n';
+        catch(const std::exception& e){
+            std::cerr << e.what() << '\n';
         }
     }while (op != 'q' && op != 'Q');
 }
 
 
-void travelpack_manager(vector<TravelPack> &packet_list){
+void travelpack_manager(std::vector<TravelPack> &packet_list){
     char op; 
     int id; //option selected by user from the menu
     clr_screen();
     do{
-        cout    << "1 - Create new travel pack\n"
-                << "2 - Edit travel pack (ID can't be changed)\n"
-                << "3 - Make travel pack unavailable\n"
-                << "\nQ - Go back" << endl; //menu options
-        cin >> op; cin.ignore(1000, '\n');
-        //cout << endl;
+        std::cout   << "1 - Create new travel pack\n"
+                    << "2 - Edit travel pack (ID can't be changed)\n"
+                    << "3 - Make travel pack unavailable\n"
+                    << "\nQ - Go back" << std::endl; //menu options
+        std::cin >> op; std::cin.ignore(1000, '\n');
+        //std::cout << std::endl;
 
         try{
             switch (op){
             case '1':
             {
-                TravelPack temp_travelpack(cin);
+                TravelPack temp_travelpack(std::cin);
                 id = find_in_vector(packet_list, temp_travelpack.get_id());
                 if (id != -1)
-                    throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
+                    throw std::runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
                 id = find_in_vector(packet_list, temp_travelpack.get_id() * -1);
                 if (id != -1)
-                    throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
+                    throw std::runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
 
                 packet_list.push_back(temp_travelpack);
                 brk();
@@ -235,7 +234,7 @@ void travelpack_manager(vector<TravelPack> &packet_list){
                     break;
                 }
                 
-                packet_list.at(id) = TravelPack(cin, packet_list.at(id));
+                packet_list.at(id) = TravelPack(std::cin, packet_list.at(id));
 
                 brk();
                 break;
@@ -255,13 +254,13 @@ void travelpack_manager(vector<TravelPack> &packet_list){
             case 'Q':
                 break;
             default:
-                cout << "THERE IS NO SUCH OPTION\n";
+                std::cout << "THERE IS NO SUCH OPTION\n";
                 brk();
                 break;
             }
         }
-        catch(const exception& e){
-            cerr << e.what() << '\n';
+        catch(const std::exception& e){
+            std::cerr << e.what() << '\n';
             brk();
         }
         
@@ -275,22 +274,22 @@ void read_info(bool &files_read, Agency &ragency){
 
     try{
         clr_screen();
-        cout << "What's the name/path of the agency's static information file (0 to go back)?" << endl;
-        string agencyfile_path; //agency file path
-        getline(cin, agencyfile_path);
+        std::cout << "What's the name/path of the agency's static information file (0 to go back)?" << std::endl;
+        std::string agencyfile_path; //agency file path
+        getline(std::cin, agencyfile_path);
 
         if (agencyfile_path == "0") //go back
             return;
 
         if (!file_exists(agencyfile_path)) //check for file existance
-            throw invalid_argument("THE SPECIFIED AGENCY FILE DOES NOT EXIST");
+            throw std::invalid_argument("THE SPECIFIED AGENCY FILE DOES NOT EXIST");
         
-        ifstream file_input(agencyfile_path);
-        string clientsfile_path, packsfile_path, url, name, aux_string;
+        std::ifstream file_input(agencyfile_path);
+        std::string clientsfile_path, packsfile_path, url, name, aux_string;
         unsigned int nif;
 
         getline(file_input, name);
-        file_input >> nif; if(file_input.fail()) throw runtime_error("INCORRECT FISCAL NUMBER\n"); file_input.ignore();
+        file_input >> nif; if(file_input.fail()) throw std::runtime_error("INCORRECT FISCAL NUMBER\n"); file_input.ignore();
         getline(file_input, url);
         Address address(file_input);
         getline(file_input, clientsfile_path);
@@ -298,10 +297,10 @@ void read_info(bool &files_read, Agency &ragency){
         file_input.close();
 
         if (!file_exists(clientsfile_path))
-            throw invalid_argument("THE SPECIFIED CLIENTS FILE DOES NOT EXIST");
+            throw std::invalid_argument("THE SPECIFIED CLIENTS FILE DOES NOT EXIST");
 
         if (!file_exists(packsfile_path))
-            throw invalid_argument("THE SPECIFIED PACKS FILE DOES NOT EXIST");
+            throw std::invalid_argument("THE SPECIFIED PACKS FILE DOES NOT EXIST");
 
         agency.name = name; agency.nif = nif; agency.address = address; agency.url = url;
 
@@ -326,10 +325,10 @@ void read_info(bool &files_read, Agency &ragency){
             
             i = find_in_vector(agency.packet_list, temp_travelpack.get_id());
             if (i != -1)
-                throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
+                throw std::runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
             i = find_in_vector(agency.packet_list, temp_travelpack.get_id() * -1);
             if (i != -1)
-                throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
+                throw std::runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
             
             
             agency.packet_list.push_back(temp_travelpack);
@@ -341,13 +340,13 @@ void read_info(bool &files_read, Agency &ragency){
         files_read = true;
 
         clr_screen();
-        cout << "INFORMATION HAS BEEN READ SUCCESSFULLY\n";
+        std::cout << "INFORMATION HAS BEEN READ SUCCESSFULLY\n";
         brk();
     }
-    catch(const exception& e){
+    catch(const std::exception& e){
         map_ref = &ragency.map_visits; //update the refence to go back to the hold map in case of failure
-        cerr << e.what() << '\n';
-        cout << "INFORMATION HAS NOT BEEN SAVED/CHANGED\n";
+        std::cerr << e.what() << '\n';
+        std::cout << "INFORMATION HAS NOT BEEN SAVED/CHANGED\n";
         brk();
     }
     
@@ -355,9 +354,9 @@ void read_info(bool &files_read, Agency &ragency){
 }
 
 
-void write_info(const Agency &agency,const string &agencyfile_path,const string &clientsfile_path, const string &packsfile_path)
+void write_info(const Agency &agency,const std::string &agencyfile_path,const std::string &clientsfile_path, const std::string &packsfile_path)
 {
-    ofstream file_output;
+    std::ofstream file_output;
     
     file_output.open (agencyfile_path);
     file_output << agency.name << '\n' << agency.nif << '\n' << agency.url << '\n';
@@ -391,7 +390,7 @@ void write_info(const Agency &agency,const string &agencyfile_path,const string 
 }
 
 
-void clients_print(vector<Client> const &client_list)
+void clients_print(std::vector<Client> const &client_list)
 {
     char op; //option selected by user from the menu
 
@@ -399,25 +398,25 @@ void clients_print(vector<Client> const &client_list)
 
     do{
         //TODO: Overload print functions so we have less options and vars
-        cout   << "1 - Print information about a specific client\n"
+        std::cout   << "1 - Print information about a specific client\n"
                     << "2 - Print information about all clients\n"
-                    << "\nQ - Exit" << endl; //menu options
+                    << "\nQ - Exit" << std::endl; //menu options
 
-        cin >> op; cin.ignore(1000, '\n');
+        std::cin >> op; std::cin.ignore(1000, '\n');
         switch (op){
         case '1':
         {
             int index = select_client(client_list);
             clr_screen();
             if(index != -1) // if user hasn't opted out
-                client_list[index].print(cout);
+                client_list[index].print(std::cout);
             brk();
             break;
         }
         case '2':
         {
             clr_screen();
-            print_clients(client_list, cout);
+            print_clients(client_list, std::cout);
             brk();
             break;
         }
@@ -425,7 +424,7 @@ void clients_print(vector<Client> const &client_list)
         case 'Q':
             break;
         default:
-            cout << "THERE IS NO SUCH OPTION\n";
+            std::cout << "THERE IS NO SUCH OPTION\n";
             brk();
             break;
         }
@@ -434,55 +433,55 @@ void clients_print(vector<Client> const &client_list)
 }
 
 
-void travelpacks_print(vector<TravelPack> const &packet_list){
+void travelpacks_print(std::vector<TravelPack> const &packet_list){
     char op; //option selected by user from the menu
 
     clr_screen();
 
     do{
         //TODO: Overload print functions so we have less options and vars
-        cout   << "1 - Print information about all travel packs\n"
+        std::cout   << "1 - Print information about all travel packs\n"
                     << "2 - Print information about a specific destination\n"
                     << "3 - Print information about a specific timespan\n"
                     << "4 - Print information about a specific destination and timespan\n"
-                    << "\nQ - Exit" << endl; //menu options
+                    << "\nQ - Exit" << std::endl; //menu options
 
-        cin >> op; cin.ignore(1000, '\n');
+        std::cin >> op; std::cin.ignore(1000, '\n');
         try{
             switch (op){
             case '1':
             {
                 clr_screen();
-                print_travelpacks(packet_list, cout);
+                print_travelpacks(packet_list, std::cout);
                 brk();
                 break;
             }
             case '2':
             {   
-                string dest;
-                cout << "Insert the specific destination: "; cin >> dest; cin.ignore();
+                std::string dest;
+                std::cout << "Insert the specific destination: "; std::cin >> dest; std::cin.ignore();
 
-                print_travelpacks(packet_list, cout, dest);
+                print_travelpacks(packet_list, std::cout, dest);
                 brk();
                 break;
             }
             case '3':
             {
-                cout << "Start date (yyyy/mm/dd)? "; Date startdate(cin);
-                cout << "End date (yyyy/mm/dd)? "; Date enddate(cin);
+                std::cout << "Start date (yyyy/mm/dd)? "; Date startdate(std::cin);
+                std::cout << "End date (yyyy/mm/dd)? "; Date enddate(std::cin);
 
-                print_travelpacks(packet_list, cout, startdate, enddate);
+                print_travelpacks(packet_list, std::cout, startdate, enddate);
                 brk();
                 break;
             }
             case '4':
             {
-                string dest;
-                cout << "Insert the specific destination: "; cin >> dest; cin.ignore();
-                cout << "Start date (yyyy/mm/dd)? "; Date startdate(cin);
-                cout << "End date (yyyy/mm/dd)? "; Date enddate(cin);
+                std::string dest;
+                std::cout << "Insert the specific destination: "; std::cin >> dest; std::cin.ignore();
+                std::cout << "Start date (yyyy/mm/dd)? "; Date startdate(std::cin);
+                std::cout << "End date (yyyy/mm/dd)? "; Date enddate(std::cin);
 
-                print_travelpacks(packet_list, cout, startdate, enddate, dest);
+                print_travelpacks(packet_list, std::cout, startdate, enddate, dest);
                 brk();
                 break;
             }
@@ -490,21 +489,21 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
             case 'Q':
                 break;
             default:
-                cout << "THERE IS NO SUCH OPTION\n";
+                std::cout << "THERE IS NO SUCH OPTION\n";
                 brk();
                 break;
             }    
         }
-        catch(const exception& e){
+        catch(const std::exception& e){
             brk();
-            cerr << e.what() << '\n';
+            std::cerr << e.what() << '\n';
         }
         
     }while (op != 'q' && op != 'Q');
 }
 
 
-void profit_made(vector<TravelPack> const &packet_list){
+void profit_made(std::vector<TravelPack> const &packet_list){
     float profit = 0;
     unsigned long long int packs = 0;
 
@@ -513,41 +512,37 @@ void profit_made(vector<TravelPack> const &packet_list){
         profit += (packet_list.at(i).get_price() * packet_list.at(i).get_taken_seats());
     }
 
-    cout << "The agency sold " << packs << " travel packs and profited " << fixed << setprecision(2) << profit << endl;
+    std::cout << "The agency sold " << packs << " travel packs and profited " << std::fixed << std::setprecision(2) << profit << std::endl;
 }
 
 
-void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Client> const &client_list){
+void bought_travelpacks_print(std::vector<TravelPack> const &packet_list, std::vector<Client> const &client_list){
     char op; //option selected by user from the menu
 
     clr_screen();
 
     do{
         //TODO: Overload print functions so we have less options and vars
-        cout    << "1 - Print information about all clients' travel packs\n"
-                << "2 - Print information about a specific client's  travel packs\n"
-                << "\nQ - Exit" << endl; //menu options
+        std::cout   << "1 - Print information about all clients' travel packs\n"
+                    << "2 - Print information about a specific client's  travel packs\n"
+                    << "\nQ - Exit" << std::endl; //menu options
 
-        cin >> op; cin.ignore(1000, '\n');
+        std::cin >> op; std::cin.ignore(1000, '\n');
         try{
             switch (op){
             case '1':
             {
                 for(int i=0;i<client_list.size();i++)
                 {
-                    cout << client_list.at(i).getName() << ":\n";
+                    std::cout << client_list.at(i).getName() << ":\n";
                     for(int j=0;j<client_list.at(i).getPackets().size();j++)
                     {
                         int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
                         if(index == -1)
-                            cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
-                        
-                        index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j) * -1);
-                        if(index == -1)
-                            cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
+                            std::cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
                         else
-                            packet_list[index].print(cout);
-                        cout << "::::::::::" << endl;
+                            packet_list[index].print(std::cout);
+                        std::cout << "::::::::::" << std::endl;
                     }
                 }
                 brk();
@@ -558,19 +553,15 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
                 int client_index = select_client(client_list);
                 if(client_index != -1)
                 {
-                    cout << client_list.at(client_index).getName() << ":\n";
+                    std::cout << client_list.at(client_index).getName() << ":\n";
                     for(int i=0;i<client_list.at(client_index).getPackets().size();i++)
                     {
                         int packet_index = find_in_vector(packet_list, client_list.at(client_index).getPackets().at(i));
                         if(packet_index == -1)
-                            cout << "Packet with ID " << client_list.at(client_index).getPackets().at(i) << " not recognized!\n";
-
-                        packet_index = find_in_vector(packet_list, client_list.at(i).getPackets().at(i) * -1);
-                        if(packet_index == -1)
-                            cout << "Packet with ID " << client_list.at(i).getPackets().at(i) << " not recognized!\n";
+                            std::cout << "Packet with ID " << client_list.at(client_index).getPackets().at(i) << " not recognized!\n";
                         else
-                            packet_list[packet_index].print(cout);
-                        cout << "::::::::::" << endl;
+                            packet_list[packet_index].print(std::cout);
+                        std::cout << "::::::::::" << std::endl;
                     }
                 }
                 brk();
@@ -580,27 +571,27 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
             case 'Q':
                 break;
             default:
-                cout << "THERE IS NO SUCH OPTION\n";
+                std::cout << "THERE IS NO SUCH OPTION\n";
                 brk();
                 break;
             }    
         }
-        catch(const exception& e){
+        catch(const std::exception& e){
             brk();
-            cerr << e.what() << '\n';
+            std::cerr << e.what() << '\n';
         }
 
     }while (op != 'q' && op != 'Q');
 }
 
 
-multiset<dests_visits, cmp_visits> make_set_from_map(){
+std::multiset<dests_visits, cmp_visits> make_set_from_map(){
     /*Creates and returns a multiset made from the cisited locals map.
-    The multiset contains pairs of <size_t, string> and sorts itself by the size_t in descending order*/
-    map<string, map_vistis_id>::iterator it;
-    multiset<dests_visits, cmp_visits> set_visits;
+    The multiset contains pairs of <size_t, std::string> and sorts itself by the size_t in descending order*/
+    std::map<std::string, map_vistis_id>::iterator it;
+    std::multiset<dests_visits, cmp_visits> set_visits;
     for (it = map_ref->begin(); it != map_ref->end(); it++)
-        set_visits.insert(make_pair((*it).second.first, (*it).first));
+        set_visits.insert(std::make_pair((*it).second.first, (*it).first));
 
     return set_visits;
 }
@@ -610,15 +601,15 @@ void top_print(){
     size_t max_packs;
     clr_screen();
 
-    cout << "What's the maximum of travel packs that should be shown? (0 to go back) ";
+    std::cout << "What's the maximum of travel packs that should be shown? (0 to go back) ";
     while(true){
-        cin >> max_packs;
-        if(cin.fail()){
-            cout << "Please insert a valid integer\n";
-            cin.clear(); cin.ignore(1000, '\n');
+        std::cin >> max_packs;
+        if(std::cin.fail()){
+            std::cout << "Please insert a valid integer\n";
+            std::cin.clear(); std::cin.ignore(1000, '\n');
             continue; // re-iterates loop
         }else{
-            cin.ignore(1000, '\n');
+            std::cin.ignore(1000, '\n');
             break;
         }
     }
@@ -626,23 +617,23 @@ void top_print(){
     if(max_packs == 0)
         return;
 
-    multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
-    multiset<dests_visits, cmp_visits>::iterator it;
+    std::multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
+    std::multiset<dests_visits, cmp_visits>::iterator it;
 
-    cout << "Destinations are ordered from most popular to least popular (When popularity is the same, the travel packs are ordered by name)\n" << endl;
+    std::cout << "Destinations are ordered from most popular to least popular (When popularity is the same, the travel packs are ordered by name)\n" << std::endl;
     for (it = set_visits.begin(); it != set_visits.end() && max_packs > 0; it++)
-        cout << (*it).second << ' ' << '(' << (*it).first << " bought seats)\n";
-    cout << endl;
+        std::cout << (*it).second << ' ' << '(' << (*it).first << " bought seats)\n";
+    std::cout << std::endl;
 }
 
-void ai(vector<TravelPack> const &packet_list, vector<Client> const &client_list){
-    multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
-    multiset<dests_visits, cmp_visits>::iterator it;
+void ai(std::vector<TravelPack> const &packet_list, std::vector<Client> const &client_list){
+    std::multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
+    std::multiset<dests_visits, cmp_visits>::iterator it;
     clr_screen();
 
     for(size_t i = 0; i < client_list.size(); i++){ //iterates through all clients
         //The set clientvisits will contain all the locations visited by this client's bough travel packs
-        set<string> clientvisits;
+        std::set<std::string> clientvisits;
         for(size_t j = 0; j < client_list.at(i).getPackets().size(); j++){
             int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
             if (index != -1){
@@ -660,17 +651,17 @@ void ai(vector<TravelPack> const &packet_list, vector<Client> const &client_list
         for (it = set_visits.begin(); it != set_visits.end(); it++){
             if ((*map_ref)[(*it).second].second.size() != 0 && clientvisits.find((*it).second) == clientvisits.end()){ //it only selects available travel packs for suggestion
                 not_found = false;
-                cout   << "The client '" << client_list.at(i).getName()
+                std::cout   << "The client '" << client_list.at(i).getName()
                             << "' should buy the travel pack with the id " << (*(*map_ref)[(*it).second].second.begin())
                             << " because '" << (*it).second << "' is the most popular location that he hasn't visited\n";
                 break;
             }
         }
         if (not_found) //in case there were no suggestions to be made
-            cout   << "The client '" << client_list.at(i).getName() 
+            std::cout   << "The client '" << client_list.at(i).getName() 
                         << "' has visited/will visit all the locations offered by the agency's AVAILABLE travel packs already."
                         << " No suggestions to be made.\n";
-        cout << endl;
+        std::cout << std::endl;
     } 
 }
 
@@ -680,10 +671,10 @@ int main(){
 
     Agency agency;
     clr_screen();
-    cout << "Developed by:\tJoao de Jesus Costa - up201806560 (FEUP)\n\t\tJoao Lucas Silva Martins - up201806436 (FEUP)\n" << endl;
+    std::cout << "Developed by:\tJoao de Jesus Costa - up201806560 (FEUP)\n\t\tJoao Lucas Silva Martins - up2018XXXXX (FEUP)\n" << std::endl;
 
     do{
-        cout   << "1 - Read information files\n"
+        std::cout   << "1 - Read information files\n"
                     << "2 - Manage clients\n"
                     << "3 - Manage travel packs\n"
                     << "4 - Print client's information\n"
@@ -693,9 +684,9 @@ int main(){
                     << "8 - Print most visited locals\n"
                     << "9 - Suggested travel packs for each client\n"
                     << "S - Save read agency information to files\n"
-                    << "\nQ - Exit\n" << endl; //menu options
+                    << "\nQ - Exit\n" << std::endl; //menu options
 
-        cin >> op; cin.ignore(1000, '\n');
+        std::cin >> op; std::cin.ignore(1000, '\n');
         switch (op){
         case '1':
             read_info(files_read, agency);
@@ -761,22 +752,22 @@ int main(){
         case 's':
         case 'S':
         {
-            string agencyfile_path, clientsfile_path, packsfile_path;
-            cout << "Insert 'Q' at anytime to go back\n";
-            cout << "Agency's information file name? "; cin >> agencyfile_path;
+            std::string agencyfile_path, clientsfile_path, packsfile_path;
+            std::cout << "Insert 'Q' at anytime to go back\n";
+            std::cout << "Agency's information file name? "; std::cin >> agencyfile_path;
             if(agencyfile_path == "q" || agencyfile_path == "Q") break;
 
-            cout << "Clients' information file name? "; cin >> clientsfile_path;
+            std::cout << "Clients' information file name? "; std::cin >> clientsfile_path;
             if(clientsfile_path == "0") break;
             if(agencyfile_path == clientsfile_path)
-                throw invalid_argument("THE FILES FOR THE AGENCY'S AND THE CLIENTS' INFORMATION CAN'T HAVE THE SAME NAME");
+                throw std::invalid_argument("THE FILES FOR THE AGENCY'S AND THE CLIENTS' INFORMATION CAN'T HAVE THE SAME NAME");
 
-            cout << "Travel packs' information file name? "; cin >> packsfile_path;
+            std::cout << "Travel packs' information file name? "; std::cin >> packsfile_path;
             if(packsfile_path == "0") break;
             if(packsfile_path == agencyfile_path)
-                throw invalid_argument("THE FILES FOR THE AGENCY'S AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
+                throw std::invalid_argument("THE FILES FOR THE AGENCY'S AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
             if(packsfile_path == clientsfile_path)
-                throw invalid_argument("THE FILES FOR THE CLIENTS' AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
+                throw std::invalid_argument("THE FILES FOR THE CLIENTS' AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
 
             write_info(agency, agencyfile_path, clientsfile_path, packsfile_path);
             break;
@@ -785,7 +776,7 @@ int main(){
         case 'Q':
             break;
         default:
-            cout << "THERE IS NO SUCH OPTION\n";
+            std::cout << "THERE IS NO SUCH OPTION\n";
             brk();
             break;
         }

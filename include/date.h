@@ -5,8 +5,8 @@
 class Date{
     public:
         Date();
-        Date(std::istream &input_stream);
-        void print(std::ostream &output_stream) const;
+        Date(istream &input_stream);
+        void print(ostream &output_stream) const;
         //Getters
         short int get_year() const;
         short int get_month() const;
@@ -22,40 +22,40 @@ Date::Date(){
     month = 0;
     day = 0;
 }
-Date::Date(std::istream &input_stream)
+Date::Date(istream &input_stream)
 {
     input_stream >> year; input_stream.ignore(1000, '/');
     input_stream >> month; input_stream.ignore(1000, '/');
     input_stream >> day; input_stream.ignore(1000, '\n');
 
     if(input_stream.fail())
-        throw std::invalid_argument("DATE IS NOT FORMATED CORRECTLY\n");
+        throw invalid_argument("DATE IS NOT FORMATED CORRECTLY\n");
 
     if((month < 1) || (month > 12))
-        throw std::domain_error("INSERT A MONTH BETWEEN 1 AND 12\n");
+        throw domain_error("INSERT A MONTH BETWEEN 1 AND 12\n");
     
     if((day < 1) || (day > 31))
-        throw std::domain_error("INSERT A DAY BETWEEN 1 AND 31\n");
+        throw domain_error("INSERT A DAY BETWEEN 1 AND 31\n");
 
     if(month == 2)
     {
         if (is_leap() && (day > 29))
-            throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");
+            throw domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");
         else if (day > 28)
-            throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");   
+            throw domain_error("INSERT A VALID DAY FOR THAT MONTH (LEAP YEAR)\n");   
     }
     else if(!(month == 1 ||month == 3 ||month == 5 ||month == 7 ||month == 8 ||month == 10 ||month == 12) && (day > 30)){
-        Date data(std::cin);
-        throw std::domain_error("INSERT A VALID DAY FOR THAT MONTH\n");
+        Date data(cin);
+        throw domain_error("INSERT A VALID DAY FOR THAT MONTH\n");
     }
 }
 
 
-void Date::print(std::ostream &output_stream) const
+void Date::print(ostream &output_stream) const
 {
     output_stream   << year << '/'
                     << month << '/'
-                    << day << std::endl;
+                    << day << endl;
 }
 
 
