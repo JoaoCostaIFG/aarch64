@@ -178,6 +178,7 @@ TravelPack::TravelPack(std::istream &input_stream, TravelPack const &old_tp){
     }
 }
 
+
 void TravelPack::print(std::ostream &output_stream) const{
     output_stream << id << std::endl;
     output_stream << destination;
@@ -219,7 +220,7 @@ void TravelPack::cleanup_oldmap(TravelPack const &old_tp){
 
 void TravelPack::rect_availability(){
     if (taken_seats >= available_seats && id > 0){
-        id *= -1;
+        make_unavailable();
     }
 }
 

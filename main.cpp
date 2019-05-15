@@ -393,7 +393,6 @@ void write_info(const Agency &agency,const std::string &agencyfile_path,const st
 void clients_print(std::vector<Client> const &client_list)
 {
     char op; //option selected by user from the menu
-    bool files_read = false;
 
     clr_screen();
 
@@ -436,7 +435,6 @@ void clients_print(std::vector<Client> const &client_list)
 
 void travelpacks_print(std::vector<TravelPack> const &packet_list){
     char op; //option selected by user from the menu
-    bool files_read = false;
 
     clr_screen();
 
@@ -520,7 +518,6 @@ void profit_made(std::vector<TravelPack> const &packet_list){
 
 void bought_travelpacks_print(std::vector<TravelPack> const &packet_list, std::vector<Client> const &client_list){
     char op; //option selected by user from the menu
-    bool files_read = false;
 
     clr_screen();
 
@@ -595,6 +592,7 @@ std::multiset<dests_visits, cmp_visits> make_set_from_map(){
     std::multiset<dests_visits, cmp_visits> set_visits;
     for (it = map_ref->begin(); it != map_ref->end(); it++)
         set_visits.insert(std::make_pair((*it).second.first, (*it).first));
+
     return set_visits;
 }
 
@@ -659,7 +657,6 @@ void ai(std::vector<TravelPack> const &packet_list, std::vector<Client> const &c
                 break;
             }
         }
-
         if (not_found) //in case there were no suggestions to be made
             std::cout   << "The client '" << client_list.at(i).getName() 
                         << "' has visited/will visit all the locations offered by the agency's AVAILABLE travel packs already."
@@ -812,6 +809,6 @@ int main(){
     ---Obter o nome dos N locais mais visitados (um pacote pode incluir visitas a vários locais), ordenados por ordem
     decrescente do número de visitas ( = número de pacotes vendidos que passam por esse local).
 
-    -Gerar uma listagem de todos os clientes na qual se indica, para cada cliente, um dos pacotes em que seja
+    ---Gerar uma listagem de todos os clientes na qual se indica, para cada cliente, um dos pacotes em que seja
     visitado um dos N locais mais visitados (ver ponto 9) que ele ainda não visitou.
 */
