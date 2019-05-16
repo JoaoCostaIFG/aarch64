@@ -135,7 +135,7 @@ int select_id(const vector<TravelPack> &packet_list)
 
 void clients_manager(Agency &agency)
 {
-    int op;
+    char op;
     int id; //option selected by user from the menu
     clr_screen();
     do{
@@ -151,7 +151,7 @@ void clients_manager(Agency &agency)
             switch (op){
             case '1':
             {
-                new_client(agency.client_list);
+                new_client(agency.client_list, agency.nif);
                 brk();
                 break;
             }
@@ -159,7 +159,7 @@ void clients_manager(Agency &agency)
             {
                 int index = select_client(agency.client_list);
                 if(index != -1) // if user hasn't opted out from selecting a client name
-                    modify_client(agency.client_list, index);
+                    modify_client(agency.client_list, index, agency.nif);
                 brk();
                 break;
             }
@@ -191,6 +191,7 @@ void clients_manager(Agency &agency)
                 break;
             default:
                 cout << "THERE IS NO SUCH OPTION\n";
+                cout << op;
                 brk();
                 break;
             }
@@ -219,7 +220,6 @@ void travelpack_manager(vector<TravelPack> &packet_list){
             case '1':
             {
                 TravelPack temp_travelpack(cin);
-              
               	//Check for duplicates for both the positive and the negative versions of the id 
                 id = find_in_vector(packet_list, temp_travelpack.get_id());
                 if (id != -1)
@@ -469,6 +469,8 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
         cin >> op; cin.ignore(1000, '\n');
 
         flag = false;
+        if(op == 'q' || op == 'Q')
+            return;
         cout << "Should unavailable travel packs' information be printed too (y for yes)? ";
         cin >> op2; cin.ignore(1000, '\n');
         if (op2 == 'y' || op2 == 'Y')
@@ -515,9 +517,9 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
                 brk();
                 break;
             }
-            case 'q':
+            /*case 'q':  // exit check is done above
             case 'Q':
-                break;
+                break;*/
             default:
                 cout << "THERE IS NO SUCH OPTION\n";
                 brk();

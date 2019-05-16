@@ -48,7 +48,7 @@ TravelPack::TravelPack(istream &input_stream){
     string temp_str;
     istringstream input_string;
 
-    cout << "ID (negative IDs make the travel pack unavailable)? ";
+    cout << "ID? (negative IDs make the travel pack unavailable) ";
     input_stream >> id; input_stream.ignore(1000, '\n');
 
     cout << "Destination and land marks? ";
@@ -94,7 +94,6 @@ TravelPack::TravelPack(istream &input_stream){
     }
 
     rect_availability();
-
     if (map_ref->find(destination) == map_ref->end()){
         (*map_ref)[destination].first = 0;
         if (is_available())

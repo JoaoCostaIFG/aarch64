@@ -72,36 +72,33 @@ int find_in_vector(vector<Client> const &vec, const string &name)
 }
 
 
-//Client vector searching functions
-bool client_exists(vector<Client> const client_list, string const name)
+//Client vector search functions
+bool client_exists(vector<Client> const client_list, unsigned int const nif, unsigned const int agency_nif, const int index=-1)
+/* Returns 1 if any client in client list has a nif equal to @param: nif. Returns 0 otherwise.
+If an index is given the client with that corresponding index in the client's vector will be ignored in the comparison.*/
 {
+    if(agency_nif == nif)
+        return 0;
     for(int i=0;i<client_list.size();i++)
-        if(name == client_list[i].getName())
-            return 1;
-    return 0;
-}
-bool client_exists(vector<Client> const client_list, string const name, unsigned int const nif)
-{
-    for(int i=0;i<client_list.size();i++)
-        if(name == client_list[i].getName() && nif == client_list[i].getNif())
+        if((nif == client_list[i].getNif()) && (i != index))  // Check if nif already is taken by a client in a list except the client susceptible to change
             return 1;
     return 0;
 }
 
 
-void modify_client(vector<Client> &client_list, int index)
+void modify_client(vector<Client> &client_list, int index, unsigned const int agency_nif)
 {
     Client new_client(cin);  // any kind of bad input exception will be thrown here
-    if(client_exists(client_list, new_client.getName(), new_client.getNif())) //TODO: Check criteria!!
+    if(client_exists(client_list, new_client.getNif(), agency_nif, index))
         throw runtime_error("Client already exists in the agency!!\n");
-    client_list[index] = new_client;
+    client_list[index] = new_client;  // replaces client
 }
 
 
-void new_client(vector<Client> &client_list)
+void new_client(vector<Client> &client_list, unsigned const int agency_nif)
 {
-    Client new_client(cin);
-    if(client_exists(client_list, new_client.getName(), new_client.getNif())) //TODO: Check criteria!!
+    Client new_client(cin);  // any kind of bad input exception will be thrown here
+    if(client_exists(client_list, new_client.getNif(), agency_nif))
         throw runtime_error("Client already exists in the agency!!\n");
     client_list.push_back(new_client);
 }
