@@ -1,12 +1,14 @@
 #ifndef __TRAVELPACK_H_
 #define __TRAVELPACK_H_
 
+// The first element in the destinations is considered the main destination. The remaining elements are considred landmarks.
+// map_ref is a pointer to the agency's map (see main.cpp for details about the map)
 
 class TravelPack{
-    public:
+    public
         TravelPack();
-        TravelPack(istream &input_stream);
-        TravelPack(istream &input_stream, TravelPack const &old_tp);
+        TravelPack(istream &input_stream);  // Used when creating a new TravelPack
+        TravelPack(istream &input_stream, TravelPack const &old_tp);  // Used when replacing an existent TravelPack
         void print(ostream &output_stream) const;
         void buy_seat();
         void make_unavailable();
@@ -53,26 +55,26 @@ TravelPack::TravelPack(istream &input_stream){
 
     cout << "Destination and land marks? ";
     getline(input_stream, temp_str);
-    if (temp_str.find("-") != string::npos){ //verify if the landmark list is present
-        input_string.str(temp_str.append("\n"));
-        getline(input_string, destination, '-'); destination = str_trim(destination);
-        getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n"));
-        while(input_string.peek() != '\n'){
-            getline(input_string, temp_str, ','); temp_str = str_trim(temp_str);
-            if (temp_str.length() != 0)
+    if (temp_str.find("-") != string::npos){ // verify if the landmark list is present
+        input_string.str(temp_str.append("\n"));  // done because getline doesn't catch \n, which will be used to check for the end of the string
+        getline(input_string, destination, '-'); destination = str_trim(destination);  // gets first element of the destinations
+        getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n")); // done because getline doesn't catch \n, which will be used to check for the end of the string
+        while(input_string.peek() != '\n'){  // do until all of the landmarks are removed
+            getline(input_string, temp_str, ','); temp_str = str_trim(temp_str);  // catches new landmark
+            if (temp_str.length() != 0)  // checks if landmark exists
                 landmarks.push_back(temp_str);
         }
 
     }else{
-        destination = str_trim(temp_str);
+        destination = str_trim(temp_str);  // no landmarks
     }
 
     cout << "Start date (yyyy/mm/dd)? ";
-    getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
+    getline(input_stream, temp_str); input_string.str(temp_str.append("\n")); // done because getline doesn't catch \n, which will be used to check for the end of the string
     start_date = Date(input_string);
 
     cout << "End date (yyyy/mm/dd)? ";
-    getline(input_stream, temp_str); input_string.str(temp_str.append("\n"));
+    getline(input_stream, temp_str); input_string.str(temp_str.append("\n")); // done because getline doesn't catch \n, which will be used to check for the end of the string
     end_date = Date(input_string);
     cout << endl;
 
@@ -95,9 +97,9 @@ TravelPack::TravelPack(istream &input_stream){
 
     rect_availability();
 
-    if (map_ref->find(destination) == map_ref->end()){
-        (*map_ref)[destination].first = 0;
-        if (is_available())
+    if (map_ref->find(destination) == map_ref->end()){  // checks if destination isn't initialized in map
+        (*map_ref)[destination].first = 0;  // initialization
+        if (is_available())  // checks if travelpack is available for purchase, so that it can be suggested to new clients
             (*map_ref)[destination].second.insert(id);
     }
     (*map_ref)[destination].first += taken_seats;
@@ -105,9 +107,9 @@ TravelPack::TravelPack(istream &input_stream){
 
     if (has_landmarks()){
         for(int i = 0; i < landmarks.size(); i++){
-            if (map_ref->find(landmarks.at(i)) == map_ref->end()){
-                (*map_ref)[landmarks.at(i)].first = 0;
-                if (is_available())
+            if (map_ref->find(landmarks.at(i)) == map_ref->end()){  // checks if destination isn't initialized in map
+                (*map_ref)[landmarks.at(i)].first = 0;  // initialization
+                if (is_available())  // checks if travelpack is available for purchase, so that it can be suggested to new clients
                     (*map_ref)[landmarks.at(i)].second.insert(id);
             }
             (*map_ref)[landmarks.at(i)].first += taken_seats;
@@ -122,18 +124,18 @@ TravelPack::TravelPack(istream &input_stream, TravelPack const &old_tp){
 
     cout << "Destination and land marks? ";
     getline(input_stream, temp_str);
-    if (temp_str.find("-") != string::npos){ //verify if the landmark list is present
-        input_string.str(temp_str.append("\n"));
-        getline(input_string, destination, '-'); destination = str_trim(destination);
-        getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n"));
-        while(input_string.peek() != '\n'){
-            getline(input_string, temp_str, ','); temp_str = str_trim(temp_str);
-            if (temp_str.length() != 0)
+    if (temp_str.find("-") != string::npos){ // verify if the landmark list is present
+        input_string.str(temp_str.append("\n"));  // done because getline doesn't catch \n, which will be used to check for the end of the string
+        getline(input_string, destination, '-'); destination = str_trim(destination);  // gets first element of the destinations
+        getline(input_string, temp_str); input_string.str(temp_str.append(" ,\n")); // done because getline doesn't catch \n, which will be used to check for the end of the string
+        while(input_string.peek() != '\n'){  // do until all of the landmarks are removed
+            getline(input_string, temp_str, ','); temp_str = str_trim(temp_str);  // catches new landmark
+            if (temp_str.length() != 0)  // checks if landmark exists
                 landmarks.push_back(temp_str);
         }
 
     }else{
-        destination = str_trim(temp_str);
+        destination = str_trim(temp_str);  // no landmarks
     }
 
     cout << "Start date (yyyy/mm/dd)? ";
@@ -168,9 +170,10 @@ TravelPack::TravelPack(istream &input_stream, TravelPack const &old_tp){
     cleanup_oldmap(old_tp);
 
     //update map with edited travel pack info
-    if (map_ref->find(destination) == map_ref->end()){
-        (*map_ref)[destination].first = 0;
-        if (is_available())
+
+    if (map_ref->find(destination) == map_ref->end()){  // checks if destination isn't initialized in map
+        (*map_ref)[destination].first = 0;  // initialization
+        if (is_available())  // checks if travelpack is available for purchase, so that it can be suggested to new clients
             (*map_ref)[destination].second.insert(id);
     }
     (*map_ref)[destination].first += taken_seats;
@@ -178,9 +181,9 @@ TravelPack::TravelPack(istream &input_stream, TravelPack const &old_tp){
 
     if (has_landmarks()){
         for(int i = 0; i < landmarks.size(); i++){
-            if (map_ref->find(landmarks.at(i)) == map_ref->end()){
-                (*map_ref)[landmarks.at(i)].first = 0;
-                if (is_available())
+            if (map_ref->find(landmarks.at(i)) == map_ref->end()){  // checks if destination isn't initialized in map
+                (*map_ref)[landmarks.at(i)].first = 0;  // initialization
+                if (is_available())  // checks if travelpack is available for purchase, so that it can be suggested to new clients
                     (*map_ref)[landmarks.at(i)].second.insert(id);
             }
             (*map_ref)[landmarks.at(i)].first += taken_seats;
@@ -208,21 +211,21 @@ void TravelPack::print(ostream &output_stream) const{
 
 
 void TravelPack::cleanup_oldmap(TravelPack const &old_tp){
-    // CLean-up "trash" left from the old version of this travel pack in the map
+    // Clean-up "trash" left from the old version of this travel pack in the map
     (*map_ref)[old_tp.get_destination()].first -= old_tp.get_taken_seats();
-    
-    if ((*map_ref)[old_tp.get_destination()].first <= 0)
+
+    if ((*map_ref)[old_tp.get_destination()].first <= 0)  // Checks if no clients have bought the updated destination's seats
         (*map_ref).erase(map_ref->find(old_tp.get_destination()));
     else
-        (*map_ref)[old_tp.get_destination()].second.erase((*map_ref)[old_tp.get_destination()].second.find(old_tp.get_id()));
+        (*map_ref)[old_tp.get_destination()].second.erase((*map_ref)[old_tp.get_destination()].second.find(old_tp.get_id()));  // removes the packet's id from the destination
 
     if (old_tp.has_landmarks()){
         for(int i = 0; i < old_tp.get_landmarks().size(); i++){
             (*map_ref)[old_tp.get_landmarks().at(i)].first -= old_tp.get_taken_seats();
             if((*map_ref)[old_tp.get_landmarks().at(i)].first <= 0)
-                (*map_ref).erase(map_ref->find(old_tp.get_landmarks().at(i)));
+                (*map_ref).erase(map_ref->find(old_tp.get_landmarks().at(i))); // Checks if no clients have bought the updated current landmark's seats
             else
-                (*map_ref)[old_tp.get_landmarks().at(i)].second.erase((*map_ref)[old_tp.get_landmarks().at(i)].second.find(old_tp.get_id()));
+                (*map_ref)[old_tp.get_landmarks().at(i)].second.erase((*map_ref)[old_tp.get_landmarks().at(i)].second.find(old_tp.get_id())); // removes the packet's id from the destination
         }
     }
 }
@@ -256,10 +259,10 @@ void TravelPack::buy_seat(){
         throw logic_error("CAN'T BUY SEAT BECAUSE THE TRAVEL PACK IS UNAVAILABLE/OVERBOOKED\n");
     }
 
-    (*map_ref)[destination].first += 1;
+    (*map_ref)[destination].first += 1;  // Adds new seat to desination
     if (has_landmarks()){
         for(int i = 0; i < landmarks.size(); i++){
-            (*map_ref)[landmarks.at(i)].first += 1;
+            (*map_ref)[landmarks.at(i)].first += 1;  // Adds new seat to current landmark
         }
     }
 
