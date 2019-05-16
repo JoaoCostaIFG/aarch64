@@ -129,7 +129,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
         }
     }
     
-    for(; i < packet_list.size(); i++){
+    for(i++; i < packet_list.size(); i++){
         if (flag || packet_list.at(i).is_available()){
             output_stream << "::::::::::\n";
             packet_list.at(i).print(output_stream);
@@ -137,7 +137,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
     }
 
     if (!found)
-        throw runtime_error("There is no travel pack with that listed destination\n");
+        throw runtime_error("THE AGENCY DOESN'T HAVE ANY REGISTERED TRAVEL PACKS\n"); //redundancy
 }
 void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_stream, string &dest, bool flag){
     //print all the travel packs that list this specific destination
@@ -152,7 +152,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
         }
     }
 
-    for(; i < packet_list.size(); i++){
+    for(i++; i < packet_list.size(); i++){
         if (flag || (packet_list.at(i).is_available() && packet_list.at(i).get_destination() == dest)){
             output_stream << "::::::::::\n";
             packet_list.at(i).print(output_stream);
@@ -160,7 +160,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
     }
 
     if (!found)
-        throw runtime_error("There is no travel pack with that listed destination\n");
+        throw runtime_error("THERE IS NO TRAVEL PACK WITH THAT LISTED DESTINATION\n");
 }
 void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_stream, Date &startdate, Date &enddate, bool flag){
     //print all the travel packs that are within this time span
@@ -175,7 +175,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
         }
     }
 
-    for(; i < packet_list.size(); i++){
+    for(i++; i < packet_list.size(); i++){
         if (flag || (packet_list.at(i).is_available() && packet_list.at(i).get_start_date() >= startdate && packet_list.at(i).get_end_date() <= enddate)){
             output_stream << "::::::::::\n";
             packet_list.at(i).print(output_stream);
@@ -183,7 +183,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
     }
 
     if (!found)
-        throw runtime_error("There is no travel pack within that timespan\n");
+        throw runtime_error("THERE IS NO TRAVEL PACK WITHIN THAT TIMESPAN\n");
 }
 void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_stream, Date &startdate, Date &enddate, string &dest, bool flag){
     //print all the travel packs that are within this time span and have the specified destination listed
@@ -198,7 +198,7 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
         }
     }
 
-    for(; i < packet_list.size(); i++){
+    for(i++; i < packet_list.size(); i++){
         if (flag || (packet_list.at(i).is_available() && packet_list.at(i).get_start_date() >= startdate && packet_list.at(i).get_end_date() <= enddate && packet_list.at(i).get_destination() == dest)){
             output_stream << "::::::::::\n";
             packet_list.at(i).print(output_stream);
@@ -206,6 +206,6 @@ void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_st
     }
 
     if (!found)
-        throw runtime_error("There is no travel pack within that timespan\n");
+        throw runtime_error("THERE IS NO TRAVEL PACK WITHIN THAT TIMESPAN AND WITH THAT LISTED DESTINATION\n");
 }
 #endif

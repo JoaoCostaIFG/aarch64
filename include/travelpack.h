@@ -93,14 +93,15 @@ TravelPack::TravelPack(istream &input_stream){
         throw invalid_argument("TRAVEL PACK IS NOT FORMATED CORRECTLY\n");
     }
 
-    rect_availability();
+    if (id > 0 && taken_seats >= available_seats)
+        id *= -1;
+
     if (map_ref->find(destination) == map_ref->end()){
         (*map_ref)[destination].first = 0;
         if (is_available())
             (*map_ref)[destination].second.insert(id);
     }
     (*map_ref)[destination].first += taken_seats;
-
 
     if (has_landmarks()){
         for(int i = 0; i < landmarks.size(); i++){
@@ -161,7 +162,8 @@ TravelPack::TravelPack(istream &input_stream, TravelPack const &old_tp){
         throw invalid_argument("TRAVEL PACK IS NOT FORMATED CORRECTLY\n");
     }
 
-    rect_availability();
+    if (id > 0 && taken_seats >= available_seats)
+        id *= -1;
 
     // CLean-up "trash" left from the old version of this travel pack in the map
     cleanup_oldmap(old_tp);

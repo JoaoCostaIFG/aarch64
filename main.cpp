@@ -478,7 +478,7 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
 
         try{
             if (packet_list.size() == 0)
-                throw logic_error("The agency doesn't have any registered travel packs");
+                throw runtime_error("THE AGENCY DOESN'T HAVE ANY REGISTERED TRAVEL PACKS");
 
             switch (op){
             case '1':
