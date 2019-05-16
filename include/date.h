@@ -28,8 +28,10 @@ Date::Date(istream &input_stream)
     input_stream >> month; input_stream.ignore(1000, '/');
     input_stream >> day; input_stream.ignore(1000, '\n');
 
-    if(input_stream.fail())
+    if(input_stream.fail()){
+        input_stream.clear();
         throw invalid_argument("DATE IS NOT FORMATED CORRECTLY\n");
+    }
 
     if((month < 1) || (month > 12))
         throw domain_error("INSERT A MONTH BETWEEN 1 AND 12\n");

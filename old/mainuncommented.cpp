@@ -8,8 +8,6 @@
 #include <set>
 #include <map>
 #include <utility>
-
-//In memory of Terry Davis (December 15, 1969 - August 11, 2018)
 using namespace std;
 
 #define clr_screen() cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //clear screen
@@ -116,7 +114,7 @@ int select_id(const vector<TravelPack> &packet_list)
         if(id_in_vector != -1) // if found, sucess!
             sucess = true;
         else{
-            index_of_packet *= -1; //we check for both the positive and the negative "version" of the id
+            index_of_packet *= -1;
             id_in_vector = find_in_vector(packet_list, index_of_packet);
 
             if(id_in_vector != -1) // if found, sucess!
@@ -141,7 +139,7 @@ void clients_manager(Agency &agency)
     do{
         cout    << "1 - Create new client\n"
                 << "2 - Change existing client\n"
-                << "3 - Delete existing client\n"
+                << "3 - Delete existing client\n" //TODO: refund packs or not??
                 << "4 - Make a purchase by an existing client\n"
                 << "\nQ - Go back" << endl; //menu options
         cin >> op; cin.ignore(1000, '\n');
@@ -203,7 +201,7 @@ void clients_manager(Agency &agency)
 
 
 void travelpack_manager(vector<TravelPack> &packet_list){
-    char op;
+    char op; 
     int id; //option selected by user from the menu
     clr_screen();
     do{
@@ -219,8 +217,6 @@ void travelpack_manager(vector<TravelPack> &packet_list){
             case '1':
             {
                 TravelPack temp_travelpack(cin);
-              
-              	//Check for duplicates for both the positive and the negative versions of the id 
                 id = find_in_vector(packet_list, temp_travelpack.get_id());
                 if (id != -1)
                     throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
@@ -239,8 +235,8 @@ void travelpack_manager(vector<TravelPack> &packet_list){
                     break;
                 }
                 
-                packet_list.at(id) = TravelPack(cin, packet_list.at(id)); //Call a different constructer for this travel pack because we're editing it. This constructor cleans the destination map of "trash information" and prevents ID changes
-				
+                packet_list.at(id) = TravelPack(cin, packet_list.at(id));
+
                 brk();
                 break;
             }
@@ -252,7 +248,7 @@ void travelpack_manager(vector<TravelPack> &packet_list){
                     break;
                 }
 
-                packet_list.at(id).make_unavailable(); //Makes the ID negative. Throws an exception in case the id is already negative. Also cleans the destination amp of "trash information"
+                packet_list.at(id).make_unavailable();
                 brk();
                 break;
             case 'q':
@@ -274,7 +270,8 @@ void travelpack_manager(vector<TravelPack> &packet_list){
 
 
 void read_info(bool &files_read, Agency &ragency){
-    Agency agency;  //information is read into a temporary agency struct so if the reading process fails, the information read before-hand, is not changed
+    Agency agency;  //information is read into a temporary agency struct so if the reading process fails, the information
+                    //read before-hand, is not changed
 
     try{
         clr_screen();
@@ -327,7 +324,6 @@ void read_info(bool &files_read, Agency &ragency){
             TravelPack temp_travelpack(file_input);
             file_input.ignore('\n'); file_input.ignore();
             
-          	//check for id duplication before adding it to the vector
             i = find_in_vector(agency.packet_list, temp_travelpack.get_id());
             if (i != -1)
                 throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
@@ -614,7 +610,6 @@ void top_print(){
     size_t max_packs;
     clr_screen();
 
-    //Reading a valid unsigned long int
     cout << "What's the maximum of travel packs that should be shown? (0 to go back) ";
     while(true){
         cin >> max_packs;
@@ -636,7 +631,7 @@ void top_print(){
 
     cout << "Destinations are ordered from most popular to least popular (When popularity is the same, the travel packs are ordered by name)\n" << endl;
     for (it = set_visits.begin(); it != set_visits.end() && max_packs > 0; it++)
-        cout << (*it).second << ' ' << '(' << (*it).first << " bought seats)\n"; //print all the elements in the set set_visits in order
+        cout << (*it).second << ' ' << '(' << (*it).first << " bought seats)\n";
     cout << endl;
 }
 
@@ -648,10 +643,8 @@ void ai(vector<TravelPack> const &packet_list, vector<Client> const &client_list
     for(size_t i = 0; i < client_list.size(); i++){ //iterates through all clients
         //The set clientvisits will contain all the locations visited by this client's bough travel packs
         set<string> clientvisits;
-        for(size_t j = 0; j < client_list.at(i).getPackets().size(); j++){ //iterates through all the travel packs bought by the current client
+        for(size_t j = 0; j < client_list.at(i).getPackets().size(); j++){
             int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
-          	
-          	//If the travelpacks being checked are currently available, the locations visited by them are added to the clientvisits set
             if (index != -1){
                 clientvisits.insert(packet_list.at(index).get_destination());
                 if (packet_list.at(index).has_landmarks()){
@@ -667,16 +660,16 @@ void ai(vector<TravelPack> const &packet_list, vector<Client> const &client_list
         for (it = set_visits.begin(); it != set_visits.end(); it++){
             if ((*map_ref)[(*it).second].second.size() != 0 && clientvisits.find((*it).second) == clientvisits.end()){ //it only selects available travel packs for suggestion
                 not_found = false;
-                cout    << "The client '" << client_list.at(i).getName()
-                        << "' should buy the travel pack with the id " << (*(*map_ref)[(*it).second].second.begin())
-                        << " because '" << (*it).second << "' is the most popular location that he hasn't visited\n";
+                cout   << "The client '" << client_list.at(i).getName()
+                            << "' should buy the travel pack with the id " << (*(*map_ref)[(*it).second].second.begin())
+                            << " because '" << (*it).second << "' is the most popular location that he hasn't visited\n";
                 break;
             }
         }
         if (not_found) //in case there were no suggestions to be made
-            cout    << "The client '" << client_list.at(i).getName() 
-                    << "' has visited/will visit all the locations offered by the agency's AVAILABLE travel packs already."
-                    << " No suggestions to be made.\n";
+            cout   << "The client '" << client_list.at(i).getName() 
+                        << "' has visited/will visit all the locations offered by the agency's AVAILABLE travel packs already."
+                        << " No suggestions to be made.\n";
         cout << endl;
     } 
 }
@@ -768,36 +761,24 @@ int main(){
         case 's':
         case 'S':
         {
-            if (files_read){
-                try{
-                    //Read the file names to save to ad verify if they are not duplicates
-                    string agencyfile_path, clientsfile_path, packsfile_path;
-                    cout << "Insert 'Q' at anytime to go back\n";
-                    cout << "Agency's information file name? "; cin >> agencyfile_path;
-                    if(agencyfile_path == "q" || agencyfile_path == "Q") break;
+            string agencyfile_path, clientsfile_path, packsfile_path;
+            cout << "Insert 'Q' at anytime to go back\n";
+            cout << "Agency's information file name? "; cin >> agencyfile_path;
+            if(agencyfile_path == "q" || agencyfile_path == "Q") break;
 
-                    cout << "Clients' information file name? "; cin >> clientsfile_path;
-                    if(clientsfile_path == "0") break;
-                    if(agencyfile_path == clientsfile_path)
-                        throw invalid_argument("THE FILES FOR THE AGENCY'S AND THE CLIENTS' INFORMATION CAN'T HAVE THE SAME NAME");
+            cout << "Clients' information file name? "; cin >> clientsfile_path;
+            if(clientsfile_path == "0") break;
+            if(agencyfile_path == clientsfile_path)
+                throw invalid_argument("THE FILES FOR THE AGENCY'S AND THE CLIENTS' INFORMATION CAN'T HAVE THE SAME NAME");
 
-                    cout << "Travel packs' information file name? "; cin >> packsfile_path;
-                    if(packsfile_path == "0") break;
-                    if(packsfile_path == agencyfile_path)
-                        throw invalid_argument("THE FILES FOR THE AGENCY'S AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
-                    if(packsfile_path == clientsfile_path)
-                        throw invalid_argument("THE FILES FOR THE CLIENTS' AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
+            cout << "Travel packs' information file name? "; cin >> packsfile_path;
+            if(packsfile_path == "0") break;
+            if(packsfile_path == agencyfile_path)
+                throw invalid_argument("THE FILES FOR THE AGENCY'S AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
+            if(packsfile_path == clientsfile_path)
+                throw invalid_argument("THE FILES FOR THE CLIENTS' AND THE TRAVEL PACKS' INFORMATION CAN'T HAVE THE SAME NAME");
 
-                    write_info(agency, agencyfile_path, clientsfile_path, packsfile_path);
-                }
-                catch(const exception& e){
-                    cerr << e.what() << '\n';
-                }
-            }
-            else
-                no_read();
-
-            brk();
+            write_info(agency, agencyfile_path, clientsfile_path, packsfile_path);
             break;
         }
         case 'q':

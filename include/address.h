@@ -42,8 +42,10 @@ Address::Address(istream &input_stream)
     getline(input_string, temp_str, '/'); locale = str_trim(temp_str);
     getline(input_string, temp_str, '/');
 
-    if(temp_str != "" || input_stream.fail())
+    if(temp_str != "" || input_stream.fail()){
+        input_stream.clear();
         throw invalid_argument("ADDRESS INFO WRITTEN INCORRECTLY\n");
+    } 
 }
 
 

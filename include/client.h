@@ -17,7 +17,8 @@ class Client{
         unsigned int nif;
         unsigned int short familySize;
         Address address;
-        vector<int> packets;  // Int is used instead of Packet because we never used Packet's methods inside a client.
+        vector<int> packets;
+        // vector<Packet> packets;  FIXME: fazer com int's ou com packets, como nos templates??
         unsigned int budget;
 
     public:
@@ -30,16 +31,20 @@ class Client{
         vector<int> getPackets() const;
         unsigned int getBudget() const;
         void buyPacket(vector<TravelPack> &packet_list, const int &id);
+        /* Changes information about an existing client*/
         
+        // SET methods
         // no need for set methods, just use the constructor instead
+        // other methods
         void print(ostream &output_stream) const;
-        // should've used << and >> instead of print and read
+
+  // friend ostream& operator<<(ostream& out, const Client & client); FIXME: What dis do??
 };
 
 Client::Client(istream &input_stream)
 {
     cout << "Name?\n"; getline(input_stream, name);
-    cout << "NIF?\n"; input_stream >> nif; input_stream.ignore(1000, '\n');
+    cout << "NIF?\n"; input_stream >> nif; input_stream.ignore(1000, '\n');     // TODO: Check if Nif for duplicates
     cout << "Family size?\n"; input_stream >> familySize; input_stream.ignore(1000, '\n');
     address = Address(input_stream);
 
@@ -65,13 +70,6 @@ Client::Client(istream &input_stream)
         
         packets.push_back(id);
     } while(temp_stream.peek() != '-');
-
-    if(input_stream.fail())
-    {
-        input_stream.clear();
-        inpur_stream.ignore(1000, '\n');
-        throw invalid_argument("Client is not formatted correctly, invalid integer!");
-    }
 
     cout << "Total money spent?\n"; input_stream >> budget; input_stream.ignore(1000, '\n');
 }
@@ -112,7 +110,7 @@ unsigned int Client::getBudget() const
 void Client::buyPacket(vector<TravelPack> &packet_list, const int &index)
 {
     if(find_in_vector(packets, packet_list[index].get_id()) != -1)
-        throw runtime_error(string("That packet was already bought by") + name);
+        throw runtime_error("That packet was already bought by" + name);
     packets.push_back(index);
 }
 

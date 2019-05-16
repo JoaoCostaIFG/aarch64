@@ -88,6 +88,11 @@ TravelPack::TravelPack(istream &input_stream){
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
     cout << endl;
 
+    if(input_stream.fail()){
+        input_stream.clear();
+        throw invalid_argument("TRAVEL PACK IS NOT FORMATED CORRECTLY\n");
+    }
+
     rect_availability();
 
     if (map_ref->find(destination) == map_ref->end()){
@@ -151,6 +156,11 @@ TravelPack::TravelPack(istream &input_stream, TravelPack const &old_tp){
     cout << "Taken seats? ";
     input_stream >> taken_seats; input_stream.ignore(1000, '\n');
     cout << endl;
+
+    if(input_stream.fail()){
+        input_stream.clear();
+        throw invalid_argument("TRAVEL PACK IS NOT FORMATED CORRECTLY\n");
+    }
 
     rect_availability();
 
