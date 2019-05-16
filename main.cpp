@@ -453,12 +453,12 @@ void clients_print(vector<Client> const &client_list)
 
 
 void travelpacks_print(vector<TravelPack> const &packet_list){
-    char op; //option selected by user from the menu
+    char op, op2; //option selected by user from the menu
+    bool flag;
 
     clr_screen();
 
     do{
-        //TODO: Overload print functions so we have less options and vars
         cout    << "1 - Print information about all travel packs\n"
                 << "2 - Print information about a specific destination\n"
                 << "3 - Print information about a specific timespan\n"
@@ -467,6 +467,13 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
 
         //overloaded print functions for travel packs
         cin >> op; cin.ignore(1000, '\n');
+
+        flag = false;
+        cout << "Should unavailable travel packs' information be printed too (y for yes)? ";
+        cin >> op2; cin.ignore(1000, '\n');
+        if (op2 == 'y' || op2 == 'Y')
+            flag = true;
+
         try{
             if (packet_list.size() == 0)
                 throw logic_error("The agency doesn't have any registered travel packs");
@@ -475,7 +482,7 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
             case '1':
             {
                 clr_screen();
-                print_travelpacks(packet_list, cout);
+                print_travelpacks(packet_list, cout, flag);
                 brk();
                 break;
             }
@@ -484,7 +491,7 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
                 string dest;
                 cout << "Insert the specific destination: "; cin >> dest; cin.ignore();
 
-                print_travelpacks(packet_list, cout, dest);
+                print_travelpacks(packet_list, cout, dest, flag);
                 brk();
                 break;
             }
@@ -493,7 +500,7 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
                 cout << "Start date (yyyy/mm/dd)? "; Date startdate(cin);
                 cout << "End date (yyyy/mm/dd)? "; Date enddate(cin);
 
-                print_travelpacks(packet_list, cout, startdate, enddate);
+                print_travelpacks(packet_list, cout, startdate, enddate, flag);
                 brk();
                 break;
             }
@@ -504,7 +511,7 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
                 cout << "Start date (yyyy/mm/dd)? "; Date startdate(cin);
                 cout << "End date (yyyy/mm/dd)? "; Date enddate(cin);
 
-                print_travelpacks(packet_list, cout, startdate, enddate, dest);
+                print_travelpacks(packet_list, cout, startdate, enddate, dest, flag);
                 brk();
                 break;
             }
@@ -715,7 +722,7 @@ int main(){
                 << "2 - Manage clients\n"
                 << "3 - Manage travel packs\n"
                 << "4 - Print client's information\n"
-                << "5 - Print available travel packs' information\n"
+                << "5 - Print travel packs' information\n"
                 << "6 - View sold travel packs\n"
                 << "7 - Number of sold travel packs and profit made\n"
                 << "8 - Print most visited locals\n"
