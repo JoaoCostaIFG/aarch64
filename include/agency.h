@@ -47,6 +47,7 @@ void print_clients(vector<Client> const &client_list, ostream &output_stream);
     /* Exports each client from client_list into output_stream.*/
 
 
+//Vector searching functions
 template <class Temp>
 int find_in_vector(vector<Temp> const &vec, Temp const &t)
 {
@@ -71,6 +72,7 @@ int find_in_vector(vector<Client> const &vec, const string &name)
 }
 
 
+//Client vector searching functions
 bool client_exists(vector<Client> const client_list, string const name)
 {
     for(int i=0;i<client_list.size();i++)
@@ -117,6 +119,7 @@ void print_clients(vector<Client> const &client_list, ostream &output_stream)
 }
 
 
+//Travel pack overloaded printing functions
 void print_travelpacks(vector<TravelPack> const &packet_list, ostream &output_stream){
     //print all the travel packs info
     packet_list.at(0).print(output_stream);

@@ -288,6 +288,7 @@ void read_info(bool &files_read, Agency &ragency){
         if (!file_exists(agencyfile_path)) //check for file existance
             throw invalid_argument("THE SPECIFIED AGENCY FILE DOES NOT EXIST");
         
+        //Read agency info
         ifstream file_input(agencyfile_path);
         string clientsfile_path, packsfile_path, url, name, aux_string;
         unsigned int nif;
@@ -300,9 +301,11 @@ void read_info(bool &files_read, Agency &ragency){
         getline(file_input, packsfile_path);
         file_input.close();
 
+        //Check clients' information file existence
         if (!file_exists(clientsfile_path))
             throw invalid_argument("THE SPECIFIED CLIENTS FILE DOES NOT EXIST");
 
+        //Check travel packs' information file existence
         if (!file_exists(packsfile_path))
             throw invalid_argument("THE SPECIFIED PACKS FILE DOES NOT EXIST");
 
@@ -335,7 +338,7 @@ void read_info(bool &files_read, Agency &ragency){
             if (i != -1)
                 throw runtime_error("CAN'T HAVE TRAVEL PACKS WITH DUPLICATED IDS");
             
-            
+            //only register travelpack if the info has been read correctly and the id is not dulicated
             agency.packet_list.push_back(temp_travelpack);
         }
         file_input.close();
@@ -361,6 +364,7 @@ void read_info(bool &files_read, Agency &ragency){
 
 void write_info(const Agency &agency,const string &agencyfile_path,const string &clientsfile_path, const string &packsfile_path)
 {
+    //use all the print methods in all the classes with the write files' handlers as ostreams
     ofstream file_output;
     
     file_output.open (agencyfile_path);
@@ -403,36 +407,46 @@ void clients_print(vector<Client> const &client_list)
 
     do{
         //TODO: Overload print functions so we have less options and vars
-        cout   << "1 - Print information about a specific client\n"
-                    << "2 - Print information about all clients\n"
-                    << "\nQ - Exit" << endl; //menu options
+        cout    << "1 - Print information about a specific client\n"
+                << "2 - Print information about all clients\n"
+                << "\nQ - Exit" << endl; //menu options
 
         cin >> op; cin.ignore(1000, '\n');
-        switch (op){
-        case '1':
-        {
-            int index = select_client(client_list);
-            clr_screen();
-            if(index != -1) // if user hasn't opted out
-                client_list[index].print(cout);
-            brk();
-            break;
+        try{
+            if (client_list.size() == 0)
+                throw logic_error("The agency doesn't have any registered travel packs");
+
+            switch (op){
+            case '1':
+            {
+                int index = select_client(client_list);
+                clr_screen();
+                if(index != -1) // if user hasn't opted out
+                    client_list[index].print(cout);
+                brk();
+                break;
+            }
+            case '2':
+            {
+                clr_screen();
+                print_clients(client_list, cout);
+                brk();
+                break;
+            }
+            case 'q':
+            case 'Q':
+                break;
+            default:
+                cout << "THERE IS NO SUCH OPTION\n";
+                brk();
+                break;
+            }
         }
-        case '2':
-        {
-            clr_screen();
-            print_clients(client_list, cout);
+        catch(const std::exception& e){
             brk();
-            break;
+            std::cerr << e.what() << '\n';
         }
-        case 'q':
-        case 'Q':
-            break;
-        default:
-            cout << "THERE IS NO SUCH OPTION\n";
-            brk();
-            break;
-        }
+        
 
     }while (op != 'q' && op != 'Q');
 }
@@ -445,14 +459,18 @@ void travelpacks_print(vector<TravelPack> const &packet_list){
 
     do{
         //TODO: Overload print functions so we have less options and vars
-        cout   << "1 - Print information about all travel packs\n"
-                    << "2 - Print information about a specific destination\n"
-                    << "3 - Print information about a specific timespan\n"
-                    << "4 - Print information about a specific destination and timespan\n"
-                    << "\nQ - Exit" << endl; //menu options
+        cout    << "1 - Print information about all travel packs\n"
+                << "2 - Print information about a specific destination\n"
+                << "3 - Print information about a specific timespan\n"
+                << "4 - Print information about a specific destination and timespan\n"
+                << "\nQ - Exit" << endl; //menu options
 
+        //overloaded print functions for travel packs
         cin >> op; cin.ignore(1000, '\n');
         try{
+            if (packet_list.size() == 0)
+                throw logic_error("The agency doesn't have any registered travel packs");
+
             switch (op){
             case '1':
             {
@@ -512,6 +530,7 @@ void profit_made(vector<TravelPack> const &packet_list){
     float profit = 0;
     unsigned long long int packs = 0;
 
+    //Calculate and print the total number of travel packs registered in the agency and how they're worth in total
     for(size_t i = 0; i < packet_list.size(); i++){
         packs += packet_list.at(i).get_taken_seats();
         profit += (packet_list.at(i).get_price() * packet_list.at(i).get_taken_seats());
@@ -537,11 +556,13 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
             switch (op){
             case '1':
             {
+                //Iterates through all clients
                 for(int i=0;i<client_list.size();i++)
                 {
                     cout << client_list.at(i).getName() << ":\n";
                     for(int j=0;j<client_list.at(i).getPackets().size();j++)
                     {
+                        //For each travel pack check if their info has been registred in the agency yet
                         int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
                         if(index == -1)
                             cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
@@ -550,7 +571,7 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
                         if(index == -1)
                             cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
                         else
-                            packet_list[index].print(cout);
+                            packet_list[index].print(cout); //Say that we don't have the info for each travel pack we haven't found
                         cout << "::::::::::" << endl;
                     }
                 }
@@ -690,17 +711,17 @@ int main(){
     cout << "Developed by:\tJoao de Jesus Costa - up201806560 (FEUP)\n\t\tJoao Lucas Silva Martins - up201806436 (FEUP)\n" << endl;
 
     do{
-        cout   << "1 - Read information files\n"
-                    << "2 - Manage clients\n"
-                    << "3 - Manage travel packs\n"
-                    << "4 - Print client's information\n"
-                    << "5 - Print travel packs' information\n"
-                    << "6 - View sold travel packs\n"
-                    << "7 - Number of sold travel packs and profit made\n"
-                    << "8 - Print most visited locals\n"
-                    << "9 - Suggested travel packs for each client\n"
-                    << "S - Save read agency information to files\n"
-                    << "\nQ - Exit\n" << endl; //menu options
+        cout    << "1 - Read information files\n"
+                << "2 - Manage clients\n"
+                << "3 - Manage travel packs\n"
+                << "4 - Print client's information\n"
+                << "5 - Print available travel packs' information\n"
+                << "6 - View sold travel packs\n"
+                << "7 - Number of sold travel packs and profit made\n"
+                << "8 - Print most visited locals\n"
+                << "9 - Suggested travel packs for each client\n"
+                << "S - Save read agency information to files\n"
+                << "\nQ - Exit\n" << endl; //menu options
 
         cin >> op; cin.ignore(1000, '\n');
         switch (op){
