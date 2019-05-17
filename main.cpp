@@ -129,7 +129,6 @@ int select_id(const vector<TravelPack> &packet_list)
     }
 
     return(id_in_vector);
-    
 }
 
 
@@ -406,7 +405,6 @@ void clients_print(vector<Client> const &client_list)
     clr_screen();
 
     do{
-        //TODO: Overload print functions so we have less options and vars
         cout    << "1 - Print information about a specific client\n"
                 << "2 - Print information about all clients\n"
                 << "\nQ - Exit" << endl; //menu options
@@ -555,7 +553,6 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
     clr_screen();
 
     do{
-        //TODO: Overload print functions so we have less options and vars
         cout    << "1 - Print information about all clients' travel packs\n"
                 << "2 - Print information about a specific client's  travel packs\n"
                 << "\nQ - Exit" << endl; //menu options
@@ -565,24 +562,23 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
             switch (op){
             case '1':
             {
+                clr_screen();
                 //Iterates through all clients
                 for(int i=0;i<client_list.size();i++)
                 {
                     cout << client_list.at(i).getName() << ":\n";
-                    for(int j=0;j<client_list.at(i).getPackets().size();j++)
+                    for(int j=0; j<client_list.at(i).getPackets().size(); j++)
                     {
                         //For each travel pack check if their info has been registred in the agency yet
                         int index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j));
                         if(index == -1)
                             cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
-                        
-                        index = find_in_vector(packet_list, client_list.at(i).getPackets().at(j) * -1);
-                        if(index == -1)
-                            cout << "Packet with ID " << client_list.at(i).getPackets().at(j) << " not recognized!\n";
                         else
                             packet_list[index].print(cout); //Say that we don't have the info for each travel pack we haven't found
+
                         cout << "::::::::::" << endl;
                     }
+                    cout << "\n\n\n";
                 }
                 brk();
                 break;
@@ -590,18 +586,15 @@ void bought_travelpacks_print(vector<TravelPack> const &packet_list, vector<Clie
             case '2':
             {   
                 int client_index = select_client(client_list);
+                clr_screen();
                 if(client_index != -1)
                 {
                     cout << client_list.at(client_index).getName() << ":\n";
-                    for(int i=0;i<client_list.at(client_index).getPackets().size();i++)
+                    for(int i=0; i<client_list.at(client_index).getPackets().size(); i++)
                     {
                         int packet_index = find_in_vector(packet_list, client_list.at(client_index).getPackets().at(i));
                         if(packet_index == -1)
                             cout << "Packet with ID " << client_list.at(client_index).getPackets().at(i) << " not recognized!\n";
-
-                        packet_index = find_in_vector(packet_list, client_list.at(i).getPackets().at(i) * -1);
-                        if(packet_index == -1)
-                            cout << "Packet with ID " << client_list.at(i).getPackets().at(i) << " not recognized!\n";
                         else
                             packet_list[packet_index].print(cout);
                         cout << "::::::::::" << endl;
@@ -665,10 +658,14 @@ void top_print(){
     multiset<dests_visits, cmp_visits>::iterator it;
 
     cout << "Destinations are ordered from most popular to least popular (When popularity is the same, the travel packs are ordered by name)\n" << endl;
-    for (it = set_visits.begin(); it != set_visits.end() && max_packs > 0; it++)
+    for (it = set_visits.begin(); it != set_visits.end() && max_packs > 0; it++){
+        max_packs--;
         cout << (*it).second << ' ' << '(' << (*it).first << " bought seats)\n"; //print all the elements in the set set_visits in order
+    }
+
     cout << endl;
 }
+
 
 void ai(vector<TravelPack> const &packet_list, vector<Client> const &client_list){
     multiset<dests_visits, cmp_visits> set_visits = make_set_from_map();
@@ -710,6 +707,7 @@ void ai(vector<TravelPack> const &packet_list, vector<Client> const &client_list
         cout << endl;
     } 
 }
+
 
 int main(){
     char op; //option selected by user from the menu

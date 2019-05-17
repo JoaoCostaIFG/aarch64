@@ -18,7 +18,6 @@ class Client{
         unsigned int short familySize;
         Address address;
         vector<int> packets;
-        // vector<Packet> packets;  FIXME: fazer com int's ou com packets, como nos templates??
         unsigned int budget;
 
     public:
@@ -31,21 +30,20 @@ class Client{
         vector<int> getPackets() const;
         unsigned int getBudget() const;
         void buyPacket(vector<TravelPack> &packet_list, const int &id);
-        /* Changes information about an existing client*/
-        
-        // SET methods
-        // no need for set methods, just use the constructor instead
-        // other methods
         void print(ostream &output_stream) const;
-
-  // friend ostream& operator<<(ostream& out, const Client & client); FIXME: What dis do??
 };
 
 Client::Client(istream &input_stream)
 {
     cout << "Name?\n"; getline(input_stream, name);
-    cout << "NIF?\n"; input_stream >> nif; input_stream.ignore(1000, '\n');     // TODO: Check if Nif for duplicates
+    cout << "NIF?\n"; input_stream >> nif; input_stream.ignore(1000, '\n');
     cout << "Family size?\n"; input_stream >> familySize; input_stream.ignore(1000, '\n');
+
+    if(input_stream.fail()){
+        input_stream.clear();
+        throw invalid_argument("CLIENT INFO IS NOT FORMATED CORRECTLY\n");
+    }
+    
     address = Address(input_stream);
 
     cout << "Travel packs bought?(n1 ; n2 ; n3 ...)\n";
@@ -72,6 +70,11 @@ Client::Client(istream &input_stream)
     } while(temp_stream.peek() != '-');
 
     cout << "Total money spent?\n"; input_stream >> budget; input_stream.ignore(1000, '\n');
+
+    if(input_stream.fail() && input_stream.peek() != EOF){
+        input_stream.clear();
+        throw invalid_argument("CLIENT IS NOT FORMATED CORRECTLY\n");
+    }
 }
 void Client::print(ostream &output_stream) const
 {
