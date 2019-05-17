@@ -8,7 +8,7 @@ We added more funcionalities to the project:
     -The user can choose to also see the unavailable travel packs printed;
     -Many checks for the user input to guarantee it was given/written in the correct way;
     -Extensive use of exceptions to make the program flow better and be more user-friendly;
-
+    -User can choose how many destinations are on "Top N" shown
 
 Developed by:
                 Joao de Jesus Costa - up201806560 (FEUP)
